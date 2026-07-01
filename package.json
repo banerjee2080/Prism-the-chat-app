@@ -1,0 +1,21 @@
+{
+  "name": "react-project2",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/banerjee2080/Chatty-The-chat-app#readme",
+  "bugs": {
+    "url": "https://github.com/banerjee2080/Chatty-The-chat-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/banerjee2080/Chatty-The-chat-app.git"
+  },
+  "license": "ISC",
+  "author": "Amitabha Banerjee",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  }
+}
