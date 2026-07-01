@@ -49,37 +49,52 @@ const MessageInput = () => {
     };
 
     return (
-      <div>
+      <div className="p-4 w-full backdrop-blur-md bg-base-100/40 border-t border-base-content/10 sticky bottom-0 z-10">
         {imagePreview && (
-          <div>
-            <img src={imagePreview} alt="preview" />
-            <button type="button" onClick={removeImage}>
-              <X />
-            </button>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="relative">
+              <img src={imagePreview} alt="preview" className="h-20 w-20 object-cover rounded-xl border border-base-content/20 shadow-sm" />
+              <button 
+                type="button" 
+                onClick={removeImage}
+                className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-base-300 flex items-center justify-center border border-base-content/10"
+              >
+                <X className="size-3" />
+              </button>
+            </div>
           </div>
         )}
-        <form onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            placeholder="Enter your message"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-          />
-          <button onClick={() => fileInputRef.current?.click()}>
-            <Image />
-          </button>
-          <div>
-            <button type="submit" disabled={!text.trim() && !imagePreview}>
-              <Send />
+        <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
+          <div className="flex-1 flex items-center bg-base-100/50 backdrop-blur-md rounded-full border border-base-content/10 shadow-inner px-4 py-2 transition-colors focus-within:bg-base-100/70 focus-within:border-base-content/20">
+            <input
+              type="text"
+              placeholder="iMessage..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-base-content/50"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+            />
+            <button 
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-base-content"
+            >
+              <Image className="size-5" />
             </button>
           </div>
+          <button 
+            type="submit" 
+            disabled={!text.trim() && !imagePreview}
+            className="btn btn-circle btn-primary btn-sm ml-1 shadow-md"
+          >
+            <Send className="size-4" />
+          </button>
         </form>
       </div>
     );

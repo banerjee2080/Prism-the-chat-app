@@ -1,2 +1,31 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+/* Midnight blue dynamic background */
+.app-background {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply backdrop-blur-xl bg-base-100/40 border border-white/10 shadow-xl;
+}
+
+.glass-liquid {
+  @apply backdrop-blur-2xl bg-base-100/70 border border-white/20 shadow-inner scale-[0.98];
+}
+
+/* Sleek custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-base-content/20 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-base-content/40;
+}

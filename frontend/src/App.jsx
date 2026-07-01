@@ -1,5 +1,6 @@
 import { Navigate, Route, Router } from "react-router-dom"
 import { useAuthStore } from "./stores/useAuthStore";
+import { useThemeStore } from "./stores/useThemeStore";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -12,20 +13,25 @@ import Navbar from "./components/Navbar";
 
 function App() {
   const { isCheckingAuth, authUser, checkAuth } = useAuthStore();
+  const { theme } = useThemeStore();
 
   useEffect(()=>{
     checkAuth();
   },[checkAuth]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
   if(isCheckingAuth && !authUser){
     return(
-      <div>
-        <Loader/>
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="size-10 animate-spin" />
       </div>
     )
   }
   return (
-    <div>
+    <div className="min-h-screen app-background text-base-content overflow-hidden flex flex-col">
       <Navbar />
       <Router>
         <Route path="/" element={authUser?<HomePage />:<Navigate to="/login"/>} />
