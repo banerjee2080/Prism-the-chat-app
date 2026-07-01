@@ -18,8 +18,7 @@ export const signup = async (req, res) => {
     const user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "Email already exists" });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       fullName,
@@ -28,8 +27,8 @@ export const signup = async (req, res) => {
     });
 
     if (newUser) {
-      generateToken(newUser._id, res);
       await newUser.save();
+      generateToken(newUser._id, res);
       res.status(201).json({
         _id: newUser._id,
         fullName: newUser.fullName,
