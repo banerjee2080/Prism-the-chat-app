@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
+import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
-import { useAuthStore } from "./useAuthStore";
+import { useAuthStore } from "./useAuthStore.js";
 
 const socket = io("http://localhost:5001");
 
@@ -12,6 +12,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
+  isMessageSending: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -27,6 +28,7 @@ export const useChatStore = create((set, get) => ({
 
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
+    set({ isMessageSending: true });
     try {
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
@@ -35,6 +37,8 @@ export const useChatStore = create((set, get) => ({
       set((state) => ({ messages: [...state.messages, res.data] }));
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
+    } finally {
+      set({ isMessageSending: false });
     }
   },
 

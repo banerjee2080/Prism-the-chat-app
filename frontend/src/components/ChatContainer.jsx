@@ -1,10 +1,11 @@
-import ChatHeader from "./ChatHeader";
-import { useChatStore } from '../stores/useChatStore';
-import MessageSkeleton from "./skeletons/MessageSkeleton";
-import MessageInput from "./MessageInput";
-import { useEffect, useRef } from "react";
-import { useAuthStore } from "../stores/useAuthStore";
-import { formatMessageTime } from "../lib/utils";
+import ChatHeader from "./ChatHeader.jsx";
+import { useChatStore } from "../stores/useChatStore.js";
+import MessageSkeleton from "./skeletons/MessageSkeleton.jsx";
+import MessageInput from "./MessageInput.jsx";
+import { useEffect, useRef, useState } from "react";
+import { useAuthStore } from "../stores/useAuthStore.js";
+import { formatMessageTime } from "../lib/utils.js";
+import { X } from "lucide-react";
 
 const ChatContainer = () => {
   const {
@@ -16,13 +17,19 @@ const ChatContainer = () => {
     unsubscribeFromMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  useEffect(()=>{
+  useEffect(() => {
     getMessages(selectedUser._id);
     subscribeToMessages();
 
-    return ()=>unsubscribeFromMessages();
-  },[selectedUser._id,getMessages,subscribeToMessages,unsubscribeFromMessages]);
+    return () => unsubscribeFromMessages();
+  }, [
+    selectedUser._id,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
@@ -32,14 +39,14 @@ const ChatContainer = () => {
 
   const messageEndRef = useRef();
 
-  if(isMessagesLoading){
-    return(
+  if (isMessagesLoading) {
+    return (
       <div>
-        <ChatHeader/>
-        <MessageSkeleton/>
-        <MessageInput/>
+        <ChatHeader />
+        <MessageSkeleton />
+        <MessageInput />
       </div>
-    )
+    );
   }
   return (
     <div className="flex-1 flex flex-col overflow-auto bg-base-100/20">
@@ -54,7 +61,13 @@ const ChatContainer = () => {
           >
             <div className="chat-image avatar">
               <div className="size-10 rounded-full border border-base-content/10 shadow-sm">
-                <img src={message.senderId===authUser._id?authUser.profilePic || "/avatar.png" : selectedUser.profilePic || "/avatar.png"} />
+                <img
+                  src={
+                    message.senderId === authUser._id
+                      ? authUser.profilePic || "/avatar.png"
+                      : selectedUser.profilePic || "/avatar.png"
+                  }
+                />
               </div>
             </div>
             <div className="chat-header mb-1">
@@ -62,12 +75,15 @@ const ChatContainer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className={`chat-bubble flex flex-col shadow-sm ${message.senderId === authUser._id ? "bg-primary text-primary-content" : "glass-panel"}`}>
+            <div
+              className={`chat-bubble flex flex-col shadow-sm ${message.senderId === authUser._id ? "bg-primary text-primary-content" : "glass-panel"}`}
+            >
               {message.image && (
                 <img
                   src={message.image}
                   alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2"
+                  className="sm:max-w-[200px] rounded-md mb-2 cursor-pointer hover:opacity-90 transition-opacity shadow-sm"
+                  onClick={() => setSelectedImage(message.image)}
                 />
               )}
               {message.text && <p>{message.text}</p>}
@@ -75,9 +91,31 @@ const ChatContainer = () => {
           </div>
         ))}
       </div>
-      <MessageInput/>
+      <MessageInput />
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm cursor-zoom-out"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-5xl max-h-[90vh] w-full flex items-center justify-center cursor-default" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={selectedImage} 
+              alt="Enlarged attachment" 
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
+            <button 
+              className="absolute top-4 right-4 md:-top-4 md:-right-4 btn btn-circle btn-sm btn-ghost bg-base-100/50 hover:bg-base-100/80 text-base-content shadow-sm"
+              onClick={() => setSelectedImage(null)}
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default ChatContainer
+export default ChatContainer;
