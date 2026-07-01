@@ -5,21 +5,27 @@ import authRouter from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import messageRouter from "./routes/message.router.js";
+import { app, server } from "./lib/Socket.js"
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(cookieParser());
 
-//app.use(cors({}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+
 
 app.use("/api/auth",authRouter);
 app.use("/api/messages",messageRouter);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log("App listening on PORT: ",PORT);
     connectDB();
 })
