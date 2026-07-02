@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { Camera, Mail, User, Loader2, Calendar } from "lucide-react";
+import { Camera, Mail, User, Loader2, Calendar, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const { authUser, updateProfile, isUpdatingProfile } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
+  const navigate = useNavigate();
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -30,6 +32,14 @@ const ProfilePage = () => {
         <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-secondary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
         <div className="relative z-10">
+          <button 
+            onClick={() => navigate("/")} 
+            className="btn btn-sm btn-ghost mb-4 flex items-center gap-2"
+          >
+            <ArrowLeft className="size-4" />
+            Back to Home
+          </button>
+          
           <div className="text-center mb-10">
             <h1 className="text-3xl font-semibold tracking-tight text-base-content mb-2">Profile</h1>
             <p className="text-base-content/60 text-sm">Manage your personal information</p>

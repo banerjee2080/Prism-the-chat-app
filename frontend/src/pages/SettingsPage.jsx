@@ -1,6 +1,7 @@
 import { THEMES } from "../constants/index.js";
 import { useThemeStore } from "../stores/useThemeStore.js";
-import { Send } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const PREVIEW_MESSAGES = [
   { id: 1, content: "Hey! How's it going?", isSent: false },
@@ -13,10 +14,18 @@ const PREVIEW_MESSAGES = [
 
 const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
+  const navigate = useNavigate();
 
   return (
     <div className="flex-1 overflow-y-auto w-full pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-5xl space-y-6">
+        <button 
+          onClick={() => navigate("/")} 
+          className="btn btn-sm btn-ghost mb-2 flex items-center gap-2"
+        >
+          <ArrowLeft className="size-4" />
+          Back to Home
+        </button>
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold">Theme</h2>
           <p className="text-sm text-base-content/70">
