@@ -19,7 +19,7 @@ const Sidebar = () => {
 
   if (isUsersLoading) return <SideBarSkeleton />;
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-content/10 flex flex-col transition-all duration-300">
+    <aside className={`h-full border-r border-base-content/10 flex flex-col transition-all duration-300 ${selectedUser ? "hidden lg:flex lg:w-72" : "w-full lg:w-72 flex"}`}>
       <div className="border-b border-base-content/10 w-full p-5">
         <label className="cursor-pointer flex items-center gap-2">
           <input
@@ -28,7 +28,7 @@ const Sidebar = () => {
             onChange={(e) => setShowOnlineOnly(e.target.checked)}
             className="checkbox checkbox-sm rounded-full checkbox-primary"
           />
-          <span className="text-sm font-medium hidden lg:block">
+          <span className="text-sm font-medium block">
             Show Online Only
           </span>
         </label>
@@ -48,7 +48,7 @@ const Sidebar = () => {
               }
             `}
           >
-            <div className="relative mx-auto lg:mx-0">
+            <div className="relative">
               <img
                 src={user.profilePic || "/avatar.png"}
                 alt={user.name}
@@ -62,8 +62,8 @@ const Sidebar = () => {
               )}
             </div>
 
-            {/* User info - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0">
+            {/* User info */}
+            <div className="text-left min-w-0 block">
               <div
                 className={`font-semibold truncate ${selectedUser?._id === user._id ? "text-base-content" : ""}`}
               >
