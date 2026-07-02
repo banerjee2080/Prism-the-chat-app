@@ -22,11 +22,11 @@ export const getAllMessages = async(req,res) => {
         const receiver_id = req.params.id;
 
         const messages = await Message.find({
-        $or: [
+          $or: [
             { senderId: sender_id, receiverId: receiver_id },
             { senderId: receiver_id, receiverId: sender_id },
-        ],
-        });
+          ],
+        }).sort({ createdAt: 1 });
         
         res.status(200).json(messages);
     }
