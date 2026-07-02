@@ -1,20 +1,49 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-@plugin "daisyui/theme" { name: "light"; }
-@plugin "daisyui/theme" { name: "dark"; default: true; }
-@plugin "daisyui/theme" { name: "synthwave"; }
-@plugin "daisyui/theme" { name: "cyberpunk"; }
-@plugin "daisyui/theme" { name: "forest"; }
-@plugin "daisyui/theme" { name: "aqua"; }
-@plugin "daisyui/theme" { name: "black"; }
-@plugin "daisyui/theme" { name: "luxury"; }
-@plugin "daisyui/theme" { name: "dracula"; }
-@plugin "daisyui/theme" { name: "night"; }
-@plugin "daisyui/theme" { name: "coffee"; }
-@plugin "daisyui/theme" { name: "dim"; }
-@plugin "daisyui/theme" { name: "nord"; }
-@plugin "daisyui/theme" { name: "sunset"; }
+@plugin "daisyui/theme" {
+  name: "light";
+}
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+}
+@plugin "daisyui/theme" {
+  name: "synthwave";
+}
+@plugin "daisyui/theme" {
+  name: "cyberpunk";
+}
+@plugin "daisyui/theme" {
+  name: "forest";
+}
+@plugin "daisyui/theme" {
+  name: "aqua";
+}
+@plugin "daisyui/theme" {
+  name: "black";
+}
+@plugin "daisyui/theme" {
+  name: "luxury";
+}
+@plugin "daisyui/theme" {
+  name: "dracula";
+}
+@plugin "daisyui/theme" {
+  name: "night";
+}
+@plugin "daisyui/theme" {
+  name: "coffee";
+}
+@plugin "daisyui/theme" {
+  name: "dim";
+}
+@plugin "daisyui/theme" {
+  name: "nord";
+}
+@plugin "daisyui/theme" {
+  name: "sunset";
+}
 
 /* Midnight blue dynamic background */
 .app-background {

@@ -95,17 +95,20 @@ const ChatContainer = () => {
 
       {/* Image Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm cursor-zoom-out"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-5xl max-h-[90vh] w-full flex items-center justify-center cursor-default" onClick={(e) => e.stopPropagation()}>
-            <img 
-              src={selectedImage} 
-              alt="Enlarged attachment" 
+          <div
+            className="relative max-w-5xl max-h-[90vh] w-full flex items-center justify-center cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedImage}
+              alt="Enlarged attachment"
               className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
             />
-            <button 
+            <button
               className="absolute top-4 right-4 md:-top-4 md:-right-4 btn btn-circle btn-sm btn-ghost bg-base-100/50 hover:bg-base-100/80 text-base-content shadow-sm"
               onClick={() => setSelectedImage(null)}
             >
