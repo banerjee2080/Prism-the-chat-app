@@ -34,7 +34,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 flex items-center justify-center p-4">
+    <div className="flex-1 overflow-y-auto pt-20 pb-10 flex items-center justify-center p-4">
       {/* Glassmorphic Container */}
       <div className="w-full max-w-md glass-panel p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl shadow-base-content/5">
         {/* Subtle background glow effect */}
