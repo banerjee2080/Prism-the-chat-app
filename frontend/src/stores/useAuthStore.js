@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+import { generateKeyPair } from "../lib/crypto.js";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
@@ -58,7 +59,11 @@ export const useAuthStore = create((set, get) => ({
   signup: async (formData) => {
     set({ isSigningUp: true });
     try {
-      const res = await axiosInstance.post("/auth/signup", formData);
+      const { publicKey, secretKey } = generateKeyPair();
+      localStorage.setItem("chat_secret_key", secretKey);
+
+      const payload = { ...formData, publicKey };
+      const res = await axiosInstance.post("/auth/signup", payload);
       set({ authUser: res.data });
       get().connectSocket();
       toast.success("Signed up successfully.");
