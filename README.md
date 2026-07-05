@@ -29,6 +29,20 @@ Prism Chat is designed to be visually breathtaking. Moving away from flat, lifel
 
 ---
 
+## 🔒 End-to-End Encryption (E2EE)
+Prism Chat prioritizes your privacy with robust **End-to-End Encryption**. Your messages are encrypted on your device before they are sent and can only be decrypted by the intended recipient. The server merely acts as a relay for ciphertext and never sees your actual conversations.
+
+<div align="center">
+  <img src="frontend/public/actual_message.png" alt="Decrypted Message" width="45%" />
+  &nbsp; &nbsp; &nbsp;
+  <img src="frontend/public/encrypted_message.png" alt="Encrypted Message" width="45%" />
+  <p>
+    <em>Left: Actual Message seen by users &nbsp; | &nbsp; Right: Encrypted Ciphertext seen by the server</em>
+  </p>
+</div>
+
+---
+
 ## 🛠 Tech Stack
 ### **Frontend**
 - **React 19** & **Vite**: Ultra-fast development and optimized production builds.
