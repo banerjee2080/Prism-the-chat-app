@@ -108,4 +108,13 @@ export const useAuthStore = create((set, get) => ({
   disConnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
   },
+
+  addContact: async (contact) => {
+    try {
+      const res = await axiosInstance.post("/auth/addContact", { contact });
+      toast.success(res.data.message);
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  },
 }));

@@ -113,3 +113,44 @@ export const checkAuth = (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const addContact = async (req, res) => {
+  try {
+    const { contact } = req.body;
+    const userId = req.user._id;
+
+    await User.findByIdAndUpdate(userId, { $push: { contacts: contact } });
+    await User.findByIdAndUpdate(contact._id, {
+      $push: { contacts: req.user },
+    });
+
+    res.status(200).json({ message: "Contact added successfully" });
+  } catch (error) {
+    console.log("Error in addContact controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getContacts = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    res.status(200).json(user.contacts);
+  } catch (error) {
+    console.log("Error in getContacts controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteContact = async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const userId = req.user._id;
+    await User.findByIdAndUpdate(userId, { $pull: { contacts: { _id: contactId } } });
+    await User.findByIdAndUpdate(contactId, { $pull: { contacts: { _id: userId } } });
+    res.status(200).json({ message: "Contact deleted successfully" });
+  } catch (error) {
+    console.log("Error in deleteContact controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};

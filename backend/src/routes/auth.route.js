@@ -1,14 +1,25 @@
 import express from "express";
-import { checkAuth, login, logout, signup, updateProfile } from "../controllers/auth.controllers.js";
-import { ProtectedRoute } from "../middleware/auth.middleware.js"
+import {
+  addContact,
+  checkAuth,
+  login,
+  logout,
+  signup,
+  updateProfile,
+  getContacts,
+  deleteContact,
+} from "../controllers/auth.controllers.js";
+import { ProtectedRoute } from "../middleware/auth.middleware.js";
 
 const authRouter = express.Router();
 
-authRouter.post("/signup",signup);
-authRouter.post("/login",login);
-authRouter.get("/logout",logout);
-authRouter.put("/updateProfile",ProtectedRoute, updateProfile);
-authRouter.get("/check",ProtectedRoute,checkAuth);
-
+authRouter.post("/signup", signup);
+authRouter.post("/login", login);
+authRouter.get("/logout", logout);
+authRouter.put("/updateProfile", ProtectedRoute, updateProfile);
+authRouter.get("/check", ProtectedRoute, checkAuth);
+authRouter.post("/addContact", ProtectedRoute, addContact);
+authRouter.get("/getContacts", ProtectedRoute, getContacts);
+authRouter.delete("/delete/:id", ProtectedRoute, deleteContact);
 
 export default authRouter;

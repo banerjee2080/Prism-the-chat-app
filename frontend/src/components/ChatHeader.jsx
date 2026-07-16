@@ -1,10 +1,18 @@
 import { useChatStore } from "../stores/useChatStore.js";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser } = useChatStore();
+  const { selectedUser, setSelectedUser, deleteContact } = useChatStore();
   const { onlineUsers } = useAuthStore();
+
+  const navigate = useNavigate();
+  const handleDelete = () => {
+    setSelectedUser(null);
+    deleteContact(selectedUser._id);
+    navigate("/");
+  };
   return (
     <div className="p-4 border-b border-base-content/10 flex justify-between items-center backdrop-blur-md bg-base-100/40 sticky top-0 z-10 shadow-sm shadow-base-content/5">
       <div className="flex items-center gap-3">
@@ -28,12 +36,22 @@ const ChatHeader = () => {
           </p>
         </div>
       </div>
-      <button
-        onClick={() => setSelectedUser(null)}
-        className="btn btn-ghost btn-sm btn-circle opacity-70 hover:opacity-100"
-      >
-        <X className="size-5" />
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleDelete}
+          className="btn btn-error btn-sm opacity-80 hover:opacity-100 text-white flex items-center gap-2"
+          title="Delete Contact"
+        >
+          <Trash2 className="size-4" />
+          <span className="hidden sm:inline">Delete</span>
+        </button>
+        <button
+          onClick={() => setSelectedUser(null)}
+          className="btn btn-ghost btn-sm btn-circle opacity-70 hover:opacity-100"
+        >
+          <X className="size-5" />
+        </button>
+      </div>
     </div>
   );
 };

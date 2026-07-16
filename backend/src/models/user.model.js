@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: "",
     },
+    contacts: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true },
 );

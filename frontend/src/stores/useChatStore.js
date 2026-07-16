@@ -12,10 +12,12 @@ const socket = io(BASE_URL);
 export const useChatStore = create((set, get) => ({
   messages: [],
   users: [],
+  contacts: [],
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
   isMessageSending: false,
+  isContactsLoading: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -44,22 +46,25 @@ export const useChatStore = create((set, get) => ({
         const formData = new FormData();
         formData.append("file", messageData.image);
         // Ensure VITE_CLOUDINARY_UPLOAD_PRESET is set in .env
-        formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+        formData.append(
+          "upload_preset",
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+        );
 
         const uploadRes = await fetch(
           `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
           {
             method: "POST",
             body: formData,
-          }
+          },
         );
         const uploadData = await uploadRes.json();
-        
+
         if (uploadData.secure_url) {
           const encryptedImage = encryptText(
             uploadData.secure_url,
             receiverPublicKey,
-            secretKey
+            secretKey,
           );
           encryptedImageUrl = encryptedImage.encryptedText;
           imageNonce = encryptedImage.nonce;
@@ -173,5 +178,31 @@ export const useChatStore = create((set, get) => ({
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
+  },
+
+  getContacts: async () => {
+    set({ isContactsLoading: true });
+    try {
+      const res = await axiosInstance.get("/auth/getContacts");
+      set({ contacts: res.data });
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    } finally {
+      set({ isContactsLoading: false });
+    }
+  },
+
+  deleteContact: async (contactId) => {
+    try {
+      const res = await axiosInstance.delete(
+        `/auth/delete/${contactId}`,
+      );
+      set((state) => ({
+        contacts: state.contacts.filter((c) => c._id !== contactId),
+      }));
+      toast.success("Contact deleted successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    }
   },
 }));
