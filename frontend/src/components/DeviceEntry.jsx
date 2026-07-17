@@ -39,11 +39,12 @@ const getDeviceIcon = (deviceType, os) => {
 };
 
 const DeviceEntry = ({ device }) => {
-  const { removeDevice } = useAuthStore();
+  const { removeDevice, devices } = useAuthStore();
   const [isRemoving, setIsRemoving] = useState(false);
   
   const currentDeviceId = localStorage.getItem("deviceId");
   const isCurrentDevice = currentDeviceId === device.deviceId;
+  const isOnlyDevice = devices.length <= 1;
 
   const handleLogout = async (deviceId) => {
     setIsRemoving(true);
@@ -96,20 +97,22 @@ const DeviceEntry = ({ device }) => {
             )}
           </div>
 
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={() => handleLogout(device.deviceId)}
-              disabled={isRemoving}
-              className="btn btn-sm btn-error btn-outline rounded-xl flex items-center gap-2"
-            >
-              {isRemoving ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <LogOutIcon className="size-4" />
-              )}
-              {isCurrentDevice ? "Log Out" : "Remove Device"}
-            </button>
-          </div>
+          {!isOnlyDevice && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => handleLogout(device.deviceId)}
+                disabled={isRemoving}
+                className="btn btn-sm btn-error btn-outline rounded-xl flex items-center gap-2"
+              >
+                {isRemoving ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <LogOutIcon className="size-4" />
+                )}
+                {isCurrentDevice ? "Log Out" : "Remove Device"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
