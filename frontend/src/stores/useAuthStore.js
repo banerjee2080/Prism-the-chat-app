@@ -16,6 +16,7 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: true,
   socket: null,
   onlineUsers: [],
+  devices: [],
 
   checkAuth: async () => {
     try {
@@ -27,6 +28,15 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
+    }
+  },
+
+  getDevices: async () => {
+    try {
+      const res = await axiosInstance.get("/auth/device");
+      set({ devices: res.data });
+    } catch (error) {
+      console.log("Error in getDevices: ", error);
     }
   },
 
@@ -116,6 +126,27 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/addContact", { contact });
       toast.success(res.data.message);
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  },
+
+  removeDevice: async (deviceId) => {
+    try {
+      const res = await axiosInstance.delete(`/auth/device/${deviceId}`);
+
+      const currentDeviceId = localStorage.getItem("deviceId");
+      if (currentDeviceId === deviceId) {
+        const currentUserEmail = get().authUser.email;
+        localStorage.removeItem(`${currentUserEmail}_secret_key`);
+        localStorage.removeItem("deviceId");
+        get().logout();
+      } else {
+        toast.success("Device removed successfully");
+      }
+
+      set({ devices: res.data.devices });
+      return res.data.devices;
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
     }

@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar.jsx";
 import AddContacts from "./pages/AddContacts.jsx";
 import SetSecretKeyPage from "./pages/setSecretKeyPage.jsx";
 import SecretKeyPage from "./pages/SecretKeyPage.jsx";
+import Devices from "./pages/Devices.jsx";
 
 function App() {
   const { isCheckingAuth, authUser, checkAuth } = useAuthStore();
@@ -101,11 +102,18 @@ function App() {
           path="/secretKey"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/devices"
+          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+        />
       </Routes>
 
       {authUser && location.pathname === "/add-Contacts" && <AddContacts />}
-      {authUser && location.pathname === "/setSecretKey" && <SetSecretKeyPage />}
+      {authUser && location.pathname === "/setSecretKey" && (
+        <SetSecretKeyPage />
+      )}
       {authUser && location.pathname === "/secretKey" && <SecretKeyPage />}
+      {authUser && location.pathname === "/devices" && <Devices />}
 
       <Toaster />
     </div>

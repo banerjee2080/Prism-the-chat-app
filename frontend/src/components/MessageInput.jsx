@@ -23,7 +23,6 @@ const MessageInput = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      // Compress the image before setting preview to speed up upload
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
@@ -104,7 +103,7 @@ const MessageInput = () => {
         <div className="flex-1 flex items-center bg-base-100/50 backdrop-blur-md rounded-full border border-base-content/10 shadow-inner shadow-base-content/5 px-4 py-2 transition-colors focus-within:bg-base-100/70 focus-within:border-base-content/20">
           <input
             type="text"
-            placeholder="iMessage..."
+            placeholder="Message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-base-content/50"

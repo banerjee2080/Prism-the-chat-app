@@ -9,6 +9,17 @@ export const generateKeyPair = () => {
   };
 };
 
+export const verifySecretKey = (secretKey, publicKey) => {
+  try {
+    const decodedSecretKey = util.decodeBase64(secretKey);
+    const keyPair = nacl.box.keyPair.fromSecretKey(decodedSecretKey);
+    const derivedPublicKey = util.encodeBase64(keyPair.publicKey);
+    return derivedPublicKey === publicKey;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const encryptText = (text, otherPersonPublicKey, mySecretKey) => {
   if (!text) return { encryptedText: "", nonce: "" };
 

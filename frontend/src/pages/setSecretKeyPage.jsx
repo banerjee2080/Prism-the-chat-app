@@ -3,18 +3,24 @@ import { useAuthStore } from "../stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../lib/axios.js";
 import { getDeviceInfo } from "../lib/utils.js";
+import { verifySecretKey } from "../lib/crypto.js";
 import toast from "react-hot-toast";
 import { KeyRound, ArrowRight, X } from "lucide-react";
 
 const SetSecretKeyPage = () => {
   const [secretKey, setSecretKey] = useState("");
-  const { authUser } = useAuthStore();
+  const { authUser, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!secretKey.trim()) {
       toast.error("Please enter a secret key.");
+      return;
+    }
+
+    if (!verifySecretKey(secretKey, authUser.publicKey)) {
+      toast.error("Invalid secret key. Please try again.");
       return;
     }
 
@@ -28,8 +34,6 @@ const SetSecretKeyPage = () => {
     } catch (error) {
       console.log("Error adding device:", error);
       toast.error(error.response?.data?.message || error.message);
-      // Still navigate since key is set locally, or maybe not?
-      // Let's navigate since the key is saved locally.
       navigate("/");
     }
   };
@@ -37,6 +41,12 @@ const SetSecretKeyPage = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-base-300/60 backdrop-blur-sm">
       <div className="glass w-full max-w-md bg-base-100/50 backdrop-blur-xl border border-white/10 p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl">
+        <button
+          onClick={() => logout()}
+          className="absolute top-4 right-4 p-2 bg-base-200/50 hover:bg-base-300/50 rounded-full transition-colors z-20"
+        >
+          <X className="size-5" />
+        </button>
         {/* Subtle background glow effect */}
         <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-secondary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>

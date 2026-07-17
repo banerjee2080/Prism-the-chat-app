@@ -171,7 +171,7 @@ export const addDevice = async (req, res) => {
     if (device) {
       return res.status(400).json({ message: "Device already exists" });
     }
-    
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -186,7 +186,7 @@ export const addDevice = async (req, res) => {
           },
         },
       },
-      { new: true }
+      { new: true },
     );
     res.status(200).json({ message: "Device added successfully" });
   } catch (error) {
@@ -203,5 +203,28 @@ export const getDevices = async (req, res) => {
   } catch (error) {
     console.log("Error in getDevices controller", error.message);
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const removeDevice = async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.devices = user.devices.filter(
+      (device) => device.deviceId !== deviceId,
+    );
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Device removed successfully", devices: user.devices });
+  } catch (error) {
+    console.error("Error in removeDevice:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

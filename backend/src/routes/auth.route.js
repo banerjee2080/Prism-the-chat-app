@@ -10,6 +10,7 @@ import {
   deleteContact,
   addDevice,
   getDevices,
+  removeDevice,
 } from "../controllers/auth.controllers.js";
 import { ProtectedRoute } from "../middleware/auth.middleware.js";
 
@@ -25,5 +26,6 @@ authRouter.get("/getContacts", ProtectedRoute, getContacts);
 authRouter.delete("/delete/:id", ProtectedRoute, deleteContact);
 authRouter.post("/device", ProtectedRoute, addDevice);
 authRouter.get("/device", ProtectedRoute, getDevices);
+authRouter.delete("/device/:deviceId", ProtectedRoute, removeDevice);
 
 export default authRouter;

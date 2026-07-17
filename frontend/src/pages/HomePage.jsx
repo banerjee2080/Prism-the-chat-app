@@ -21,6 +21,29 @@ const HomePage = () => {
     }
   }, [authUser.email, navigate]);
 
+  useEffect(() => {
+    const verifyDeviceStatus = async () => {
+      try {
+        const res = await axiosInstance.get("/auth/device");
+        const activeDevices = res.data;
+        const currentDeviceInfo = getDeviceInfo();
+
+        const deviceStillValid = activeDevices.find(
+          (device) => device.deviceId === currentDeviceInfo.deviceId,
+        );
+
+        if (!deviceStillValid) {
+          localStorage.removeItem(`${authUser.email}_secret_key`);
+          navigate("/setSecretKey");
+        }
+      } catch (error) {
+        console.log("Error verifying device: ", error);
+      }
+    };
+
+    verifyDeviceStatus();
+  }, [authUser.email, navigate]);
+
   return (
     <div className="flex-1 min-h-0 flex justify-center pt-8 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="glass-panel w-full max-w-6xl h-full flex overflow-hidden">
