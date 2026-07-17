@@ -3,6 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { generateKeyPair } from "../lib/crypto.js";
+import { getDeviceInfo } from "../lib/utils.js";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
@@ -60,9 +61,11 @@ export const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const { publicKey, secretKey } = generateKeyPair();
-      localStorage.setItem("chat_secret_key", secretKey);
+      localStorage.setItem(`${formData.email}_secret_key`, secretKey);
 
-      const payload = { ...formData, publicKey };
+      const deviceInfo = getDeviceInfo();
+
+      const payload = { ...formData, publicKey, devices: [deviceInfo] };
       const res = await axiosInstance.post("/auth/signup", payload);
       set({ authUser: res.data });
       get().connectSocket();

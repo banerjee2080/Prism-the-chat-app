@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar.jsx";
 import AddContacts from "./pages/AddContacts.jsx";
+import SetSecretKeyPage from "./pages/setSecretKeyPage.jsx";
+import SecretKeyPage from "./pages/SecretKeyPage.jsx";
 
 function App() {
   const { isCheckingAuth, authUser, checkAuth } = useAuthStore();
@@ -91,9 +93,19 @@ function App() {
           path="/add-Contacts"
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/setSecretKey"
+          element={authUser ? <HomePage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/secretKey"
+          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+        />
       </Routes>
 
       {authUser && location.pathname === "/add-Contacts" && <AddContacts />}
+      {authUser && location.pathname === "/setSecretKey" && <SetSecretKeyPage />}
+      {authUser && location.pathname === "/secretKey" && <SecretKeyPage />}
 
       <Toaster />
     </div>

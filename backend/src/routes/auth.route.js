@@ -8,6 +8,8 @@ import {
   updateProfile,
   getContacts,
   deleteContact,
+  addDevice,
+  getDevices,
 } from "../controllers/auth.controllers.js";
 import { ProtectedRoute } from "../middleware/auth.middleware.js";
 
@@ -21,5 +23,7 @@ authRouter.get("/check", ProtectedRoute, checkAuth);
 authRouter.post("/addContact", ProtectedRoute, addContact);
 authRouter.get("/getContacts", ProtectedRoute, getContacts);
 authRouter.delete("/delete/:id", ProtectedRoute, deleteContact);
+authRouter.post("/device", ProtectedRoute, addDevice);
+authRouter.get("/device", ProtectedRoute, getDevices);
 
 export default authRouter;

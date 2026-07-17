@@ -35,7 +35,8 @@ export const useChatStore = create((set, get) => ({
     const { selectedUser, messages } = get();
     set({ isMessageSending: true });
     try {
-      const secretKey = localStorage.getItem("chat_secret_key");
+      const currentUserEmail = useAuthStore.getState().authUser.email;
+      const secretKey = localStorage.getItem(`${currentUserEmail}_secret_key`);
       const receiverPublicKey = selectedUser.publicKey;
 
       let encryptedImageUrl = "";
@@ -109,7 +110,10 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
 
-      const mySecretKey = localStorage.getItem("chat_secret_key");
+      const currentUserEmail = useAuthStore.getState().authUser.email;
+      const mySecretKey = localStorage.getItem(
+        `${currentUserEmail}_secret_key`,
+      );
       const otherPersonPublicKey = get().selectedUser.publicKey;
 
       const decryptedMessages = res.data.map((msg) => {
@@ -151,7 +155,10 @@ export const useChatStore = create((set, get) => ({
 
     socket.on("newMessage", (newMessage) => {
       if (newMessage.senderId !== selectedUser._id) return;
-      const mySecretKey = localStorage.getItem("chat_secret_key");
+      const currentUserEmail = useAuthStore.getState().authUser.email;
+      const mySecretKey = localStorage.getItem(
+        `${currentUserEmail}_secret_key`,
+      );
       const otherPersonPublicKey = selectedUser.publicKey;
 
       if (newMessage.text && newMessage.textNonce) {
@@ -194,9 +201,7 @@ export const useChatStore = create((set, get) => ({
 
   deleteContact: async (contactId) => {
     try {
-      const res = await axiosInstance.delete(
-        `/auth/delete/${contactId}`,
-      );
+      const res = await axiosInstance.delete(`/auth/delete/${contactId}`);
       set((state) => ({
         contacts: state.contacts.filter((c) => c._id !== contactId),
       }));

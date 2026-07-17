@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+const deviceSchema = new mongoose.Schema({
+  deviceId: { type: String, required: true },
+  deviceType: { type: String, default: "desktop" },
+  deviceName: { type: String },
+  browser: { type: String },
+  os: { type: String },
+  ipAddress: { type: String },
+  lastActive: { type: Date, default: Date.now },
+});
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -27,6 +37,10 @@ const userSchema = new mongoose.Schema(
     },
     contacts: {
       type: Array,
+      default: [],
+    },
+    devices: {
+      type: [deviceSchema],
       default: [],
     },
   },

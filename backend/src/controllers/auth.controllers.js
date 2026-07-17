@@ -5,7 +5,7 @@ import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   try {
-    const { email, fullName, password, publicKey } = req.body;
+    const { email, fullName, password, publicKey, devices } = req.body;
     if (!email || !fullName || !password || !publicKey) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -25,6 +25,7 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
       publicKey,
+      devices: devices || [],
     });
 
     if (newUser) {
@@ -146,11 +147,61 @@ export const deleteContact = async (req, res) => {
   try {
     const { contactId } = req.params;
     const userId = req.user._id;
-    await User.findByIdAndUpdate(userId, { $pull: { contacts: { _id: contactId } } });
-    await User.findByIdAndUpdate(contactId, { $pull: { contacts: { _id: userId } } });
+    await User.findByIdAndUpdate(userId, {
+      $pull: { contacts: { _id: contactId } },
+    });
+    await User.findByIdAndUpdate(contactId, {
+      $pull: { contacts: { _id: userId } },
+    });
     res.status(200).json({ message: "Contact deleted successfully" });
   } catch (error) {
     console.log("Error in deleteContact controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const addDevice = async (req, res) => {
+  try {
+    const { deviceId, deviceType, deviceName, browser, os, ipAddress } =
+      req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    const device = user.devices.find((d) => d.deviceId === deviceId);
+    if (device) {
+      return res.status(400).json({ message: "Device already exists" });
+    }
+    
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          devices: {
+            deviceId,
+            deviceType,
+            deviceName,
+            browser,
+            os,
+            ipAddress,
+          },
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({ message: "Device added successfully" });
+  } catch (error) {
+    console.log("Error in addDevice controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getDevices = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    res.status(200).json(user.devices || []);
+  } catch (error) {
+    console.log("Error in getDevices controller", error.message);
     res.status(500).json({ message: error.message });
   }
 };

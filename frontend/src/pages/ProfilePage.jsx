@@ -116,6 +116,16 @@ const ProfilePage = () => {
               </div>
               <div className="badge badge-success badge-sm shadow-sm shadow-base-content/10">Active</div>
             </div>
+
+            <button 
+              onClick={() => navigate("/secretKey")}
+              className="w-full mt-6 bg-primary/10 hover:bg-primary/20 backdrop-blur-md rounded-3xl p-4 border border-primary/20 flex items-center justify-center gap-2 transition-all duration-300 text-primary font-semibold shadow-lg shadow-primary/5 group"
+            >
+              <span>View Secret Key</span>
+              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+                <ArrowLeft className="size-3 rotate-180" />
+              </div>
+            </button>
           </div>
 
         </div>
