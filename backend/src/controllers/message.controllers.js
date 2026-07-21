@@ -16,6 +16,32 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const getSidebarUsers = async (req, res) => {
+  try {
+    const loggedInUserId = req.user._id;
+
+    // Get contact IDs
+    const loggedInUser = await User.findById(loggedInUserId);
+    const contactIds = loggedInUser.contacts.map((c) => c._id.toString());
+
+    // Get users who have sent a message to me
+    const messages = await Message.find({ receiverId: loggedInUserId }).select("senderId");
+    const messageSenderIds = messages.map((m) => m.senderId.toString());
+
+    // Merge and unique
+    const allUserIds = [...new Set([...contactIds, ...messageSenderIds])];
+
+    const sidebarUsers = await User.find({
+      _id: { $in: allUserIds, $ne: loggedInUserId },
+    }).select("-password");
+
+    res.status(200).json(sidebarUsers);
+  } catch (error) {
+    console.log("Error occurred while fetching sidebar users: ", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getAllMessages = async (req, res) => {
   try {
     const sender_id = req.user._id;

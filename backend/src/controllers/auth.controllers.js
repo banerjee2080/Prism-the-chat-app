@@ -121,9 +121,6 @@ export const addContact = async (req, res) => {
     const userId = req.user._id;
 
     await User.findByIdAndUpdate(userId, { $push: { contacts: contact } });
-    await User.findByIdAndUpdate(contact._id, {
-      $push: { contacts: req.user },
-    });
 
     res.status(200).json({ message: "Contact added successfully" });
   } catch (error) {
@@ -149,9 +146,6 @@ export const deleteContact = async (req, res) => {
     const userId = req.user._id;
     await User.findByIdAndUpdate(userId, {
       $pull: { contacts: { _id: contactId } },
-    });
-    await User.findByIdAndUpdate(contactId, {
-      $pull: { contacts: { _id: userId } },
     });
     res.status(200).json({ message: "Contact deleted successfully" });
   } catch (error) {

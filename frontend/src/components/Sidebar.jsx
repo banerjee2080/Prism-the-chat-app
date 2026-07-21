@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { useChatStore } from "../stores/useChatStore.js";
+import { useChatStore, useChatStore } from "../stores/useChatStore.js";
 import SideBarSkeleton from "./skeletons/SideBarSkeleton.jsx";
 import NoContacts from "./NoContacts.jsx";
 import { useNavigate } from "react-router-dom";
@@ -10,24 +10,26 @@ const Sidebar = () => {
   const {
     setSelectedUser,
     selectedUser,
-    isContactsLoading,
+    isSidebarUsersLoading,
+    getSidebarUsers,
+    sidebarUsers,
     getContacts,
-    contacts,
   } = useChatStore();
   const { onlineUsers, addContact } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
+    getSidebarUsers();
     getContacts();
-  }, [getContacts]);
+  }, [getSidebarUsers, getContacts]);
 
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const filteredUsers = showOnlineOnly
-    ? contacts.filter((c) => onlineUsers.includes(c._id))
-    : contacts;
+    ? sidebarUsers.filter((c) => onlineUsers.includes(c._id))
+    : sidebarUsers;
 
-  if (isContactsLoading) return <SideBarSkeleton />;
-  if (contacts.length === 0) return <NoContacts />;
+  if (isSidebarUsersLoading) return <SideBarSkeleton />;
+  if (sidebarUsers.length === 0) return <NoContacts />;
   return (
     <aside
       className={`h-full border-r border-base-content/10 flex flex-col transition-all duration-300 ${selectedUser ? "hidden lg:flex lg:w-72" : "w-full lg:w-72 flex"}`}
@@ -45,7 +47,7 @@ const Sidebar = () => {
       </div>
 
       <div className="w-full px-5 pb-2">
-        <button 
+        <button
           onClick={() => navigate("/add-Contacts")}
           className="btn btn-primary w-full shadow-md shadow-primary/20 rounded-2xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
         >
