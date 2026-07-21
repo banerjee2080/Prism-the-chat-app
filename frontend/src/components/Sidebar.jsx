@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { useChatStore, useChatStore } from "../stores/useChatStore.js";
+import { useChatStore } from "../stores/useChatStore.js";
 import SideBarSkeleton from "./skeletons/SideBarSkeleton.jsx";
 import NoContacts from "./NoContacts.jsx";
 import { useNavigate } from "react-router-dom";
