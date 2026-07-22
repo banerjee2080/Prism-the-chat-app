@@ -6,7 +6,7 @@ import { useAuthStore } from "../stores/useAuthStore.js";
 import toast from "react-hot-toast";
 
 const AddContacts = () => {
-  const { getUsers, users, isUsersLoading, contacts, getContacts } =
+  const { getUsers, users, isUsersLoading, contacts, getContacts, getSidebarUsers } =
     useChatStore();
   const { addContact } = useAuthStore();
   const navigate = useNavigate();
@@ -117,6 +117,7 @@ const AddContacts = () => {
                         setIsAdding(true);
                         await addContact(contact);
                         await getContacts();
+                        await getSidebarUsers();
                         setIsAdding(false);
                       }}
                       disabled={isAdding}

@@ -167,7 +167,12 @@ export const useChatStore = create((set, get) => ({
     if (!selectedUser) return;
     const socket = useAuthStore.getState().socket;
 
-    socket.on("newMessage", (newMessage) => {
+    // Remove any existing listener to prevent duplicates
+    if (get().messageHandler) {
+      socket.off("newMessage", get().messageHandler);
+    }
+
+    const messageHandler = (newMessage) => {
       if (newMessage.senderId !== selectedUser._id) return;
       const currentUserEmail = useAuthStore.getState().authUser.email;
       const mySecretKey = localStorage.getItem(
@@ -193,12 +198,19 @@ export const useChatStore = create((set, get) => ({
       }
 
       set({ messages: [...get().messages, newMessage] });
-    });
+    };
+
+    socket.on("newMessage", messageHandler);
+    set({ messageHandler });
   },
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
-    socket.off("newMessage");
+    const { messageHandler } = get();
+    if (messageHandler) {
+      socket.off("newMessage", messageHandler);
+      set({ messageHandler: null });
+    }
   },
 
   getContacts: async () => {

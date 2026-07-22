@@ -23,6 +23,22 @@ const Sidebar = () => {
     getContacts();
   }, [getSidebarUsers, getContacts]);
 
+  const socket = useAuthStore((state) => state.socket);
+
+  useEffect(() => {
+    if (!socket) return;
+    
+    const handleNewMessage = () => {
+      getSidebarUsers();
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, getSidebarUsers]);
+
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const filteredUsers = showOnlineOnly
     ? sidebarUsers.filter((c) => onlineUsers.includes(c._id))
