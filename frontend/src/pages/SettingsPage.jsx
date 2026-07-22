@@ -1,6 +1,6 @@
 import { THEMES } from "../constants/index.js";
 import { useThemeStore } from "../stores/useThemeStore.js";
-import { Send, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PREVIEW_MESSAGES = [
@@ -13,7 +13,7 @@ const PREVIEW_MESSAGES = [
 ];
 
 const SettingsPage = () => {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, notificationSound, setNotificationSound, isMuted, setIsMuted } = useThemeStore();
   const navigate = useNavigate();
 
   return (
@@ -67,6 +67,44 @@ const SettingsPage = () => {
                 </span>
               </button>
             ))}
+          </div>
+        </div>
+
+        <div className="bg-base-100/60 backdrop-blur-xl border border-base-content/10 p-8 rounded-[2rem] shadow-2xl shadow-base-content/5 mt-8">
+          <div className="flex flex-col gap-2 mb-8">
+            <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+              Audio Settings
+            </h2>
+            <p className="text-sm text-base-content/70">
+              Customize your notification sounds and mute preferences.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between bg-base-200/50 p-6 rounded-3xl border border-base-content/5">
+            <div className="flex-1 space-y-4 w-full">
+              <label className="text-sm font-semibold text-base-content/80 tracking-wide uppercase">Notification Sound</label>
+              <div className="flex flex-wrap gap-3">
+                {["default", "pop", "bell"].map((sound) => (
+                  <button
+                    key={sound}
+                    onClick={() => setNotificationSound(sound)}
+                    className={`btn btn-sm rounded-full px-6 transition-all ${notificationSound === sound ? "btn-primary shadow-md shadow-primary/20 scale-105" : "btn-ghost bg-base-100/50 hover:bg-base-300"}`}
+                  >
+                    {sound.charAt(0).toUpperCase() + sound.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="divider sm:divider-horizontal"></div>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-semibold text-base-content/80 tracking-wide uppercase">Mute Notifications</label>
+              <button
+                onClick={() => setIsMuted(!isMuted)}
+                className={`btn btn-circle ${isMuted ? "btn-error shadow-md shadow-error/20" : "btn-ghost bg-base-100/50 hover:bg-base-300"}`}
+              >
+                {isMuted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
+              </button>
+            </div>
           </div>
         </div>
 

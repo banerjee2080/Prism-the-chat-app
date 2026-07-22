@@ -14,6 +14,7 @@ const Sidebar = () => {
     getSidebarUsers,
     sidebarUsers,
     getContacts,
+    unreadCounts,
   } = useChatStore();
   const { onlineUsers, addContact } = useAuthStore();
   const navigate = useNavigate();
@@ -23,21 +24,7 @@ const Sidebar = () => {
     getContacts();
   }, [getSidebarUsers, getContacts]);
 
-  const socket = useAuthStore((state) => state.socket);
 
-  useEffect(() => {
-    if (!socket) return;
-    
-    const handleNewMessage = () => {
-      getSidebarUsers();
-    };
-
-    socket.on("newMessage", handleNewMessage);
-    
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-    };
-  }, [socket, getSidebarUsers]);
 
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const filteredUsers = showOnlineOnly
@@ -100,7 +87,7 @@ const Sidebar = () => {
             </div>
 
             {/* User info */}
-            <div className="text-left min-w-0 block">
+            <div className="text-left min-w-0 flex-1">
               <div
                 className={`font-bold truncate tracking-wide text-[15px] ${selectedUser?._id === contacts._id ? "text-primary-content" : "text-base-content/90"}`}
               >
@@ -112,6 +99,13 @@ const Sidebar = () => {
                 {onlineUsers.includes(contacts._id) ? "Online" : "Offline"}
               </div>
             </div>
+            
+            {/* Unread badge */}
+            {unreadCounts[contacts._id] > 0 && (
+              <div className="badge badge-primary badge-sm font-bold shadow-md shadow-primary/20">
+                {unreadCounts[contacts._id]}
+              </div>
+            )}
           </button>
         ))}
         {filteredUsers.length === 0 && (

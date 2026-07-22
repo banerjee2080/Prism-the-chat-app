@@ -5,7 +5,7 @@ import MessageInput from "./MessageInput.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
 import { formatMessageTime } from "../lib/utils.js";
-import { X } from "lucide-react";
+import { X, Check, CheckCheck } from "lucide-react";
 
 const ChatContainer = () => {
   const {
@@ -13,22 +13,15 @@ const ChatContainer = () => {
     getMessages,
     isMessagesLoading,
     selectedUser,
-    subscribeToMessages,
-    unsubscribeFromMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     getMessages(selectedUser._id);
-    subscribeToMessages();
-
-    return () => unsubscribeFromMessages();
   }, [
     selectedUser._id,
     getMessages,
-    subscribeToMessages,
-    unsubscribeFromMessages,
   ]);
 
   useEffect(() => {
@@ -94,9 +87,20 @@ const ChatContainer = () => {
                 )}
                 {message.text && <p className="text-[15px] leading-relaxed">{message.text}</p>}
                 
-                <p className={`text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-5 ${isSent ? 'right-2 text-base-content/60' : 'left-2 text-base-content/60'}`}>
-                  {formatMessageTime(message.createdAt)}
-                </p>
+                <div className={`flex items-center gap-1 absolute -bottom-5 ${isSent ? 'right-2' : 'left-2'}`}>
+                  <p className="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity text-base-content/60">
+                    {formatMessageTime(message.createdAt)}
+                  </p>
+                  {isSent && (
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      {message.isRead ? (
+                        <CheckCheck className="size-4 text-info" />
+                      ) : (
+                        <Check className="size-4 text-base-content/40" />
+                      )}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           );

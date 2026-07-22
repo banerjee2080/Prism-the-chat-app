@@ -25,7 +25,9 @@ export const getSidebarUsers = async (req, res) => {
     const contactIds = loggedInUser.contacts.map((c) => c._id.toString());
 
     // Get users who have sent a message to me
-    const messages = await Message.find({ receiverId: loggedInUserId }).select("senderId");
+    const messages = await Message.find({ receiverId: loggedInUserId }).select(
+      "senderId",
+    );
     const messageSenderIds = messages.map((m) => m.senderId.toString());
 
     // Merge and unique
@@ -35,7 +37,19 @@ export const getSidebarUsers = async (req, res) => {
       _id: { $in: allUserIds, $ne: loggedInUserId },
     }).select("-password");
 
-    res.status(200).json(sidebarUsers);
+    // Get unread counts
+    const unreadMessages = await Message.find({
+      receiverId: loggedInUserId,
+      isRead: false,
+    });
+    
+    const unreadCounts = {};
+    unreadMessages.forEach((msg) => {
+      const senderIdStr = msg.senderId.toString();
+      unreadCounts[senderIdStr] = (unreadCounts[senderIdStr] || 0) + 1;
+    });
+
+    res.status(200).json({ users: sidebarUsers, unreadCounts });
   } catch (error) {
     console.log("Error occurred while fetching sidebar users: ", error);
     res.status(500).json({ message: error.message });
@@ -87,5 +101,27 @@ export const sendMessage = async (req, res) => {
   } catch (error) {
     console.log("Error in sending Message: ", error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const markMessagesAsRead = async (req, res) => {
+  try {
+    const { id: senderId } = req.params;
+    const myId = req.user._id;
+
+    await Message.updateMany(
+      { senderId, receiverId: myId, isRead: false },
+      { $set: { isRead: true } },
+    );
+
+    const senderSocketId = getReceiverSocketId(senderId);
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("messagesRead", { receiverId: myId });
+    }
+
+    res.status(200).json({ message: "Messages marked as read" });
+  } catch (error) {
+    console.error("Error in markMessagesAsRead: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

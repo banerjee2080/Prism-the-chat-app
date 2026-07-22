@@ -116,6 +116,10 @@ export const useAuthStore = create((set, get) => ({
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
+
+    import("./useChatStore.js").then(({ useChatStore }) => {
+      useChatStore.getState().initGlobalListeners();
+    });
   },
 
   disConnectSocket: () => {

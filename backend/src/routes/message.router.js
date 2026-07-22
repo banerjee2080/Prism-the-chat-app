@@ -1,12 +1,19 @@
 import express from "express";
-import { ProtectedRoute } from "../middleware/auth.middleware.js"
-import { getAllMessages, getAllUsers, sendMessage, getSidebarUsers } from "../controllers/message.controllers.js";
+import { ProtectedRoute } from "../middleware/auth.middleware.js";
+import {
+  getAllMessages,
+  getAllUsers,
+  sendMessage,
+  getSidebarUsers,
+  markMessagesAsRead,
+} from "../controllers/message.controllers.js";
 
 const messageRouter = express.Router();
 
-messageRouter.get("/users",ProtectedRoute, getAllUsers); //get all the users for the sidebar
+messageRouter.get("/users", ProtectedRoute, getAllUsers); //get all the users for the sidebar
 messageRouter.get("/sidebar-users", ProtectedRoute, getSidebarUsers);
-messageRouter.get("/:id", ProtectedRoute, getAllMessages ); //get all the messages between you and receiver with id req.params.id
+messageRouter.get("/:id", ProtectedRoute, getAllMessages); //get all the messages between you and receiver with id req.params.id
 messageRouter.post("/send/:id", ProtectedRoute, sendMessage); //send a message to user with an id req.params.id
+messageRouter.put("/mark-read/:id", ProtectedRoute, markMessagesAsRead);
 
 export default messageRouter;

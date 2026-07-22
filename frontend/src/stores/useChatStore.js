@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { useAuthStore } from "./useAuthStore.js";
 import { encryptText, decryptText } from "../lib/crypto.js";
+import { useThemeStore } from "./useThemeStore.js";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
@@ -20,6 +21,7 @@ export const useChatStore = create((set, get) => ({
   isMessagesLoading: false,
   isMessageSending: false,
   isContactsLoading: false,
+  unreadCounts: {},
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -37,7 +39,7 @@ export const useChatStore = create((set, get) => ({
     set({ isSidebarUsersLoading: true });
     try {
       const res = await axiosInstance.get("/messages/sidebar-users");
-      set({ sidebarUsers: res.data });
+      set({ sidebarUsers: res.data.users, unreadCounts: res.data.unreadCounts || {} });
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
     } finally {
@@ -158,59 +160,88 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  setSelectedUser: (selectedUser) => {
+  setSelectedUser: async (selectedUser) => {
     set({ selectedUser });
+    if (selectedUser) {
+      const currentUnreadCount = get().unreadCounts;
+      set({ unreadCounts: { ...currentUnreadCount, [selectedUser._id]: 0 } });
+
+      try {
+        await axiosInstance.put(`/messages/mark-read/${user._id}`);
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    }
   },
 
-  subscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
+  initGlobalListeners: () => {
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
-    // Remove any existing listener to prevent duplicates
-    if (get().messageHandler) {
-      socket.off("newMessage", get().messageHandler);
-    }
+    socket.off("newMessage");
+    socket.on("newMessage", (newMessage) => {
+      const { selectedUser, unreadCounts, messages } = get();
+      
+      const { notificationSound, isMuted } = useThemeStore.getState();
+      const playSound = () => {
+        if (!isMuted) {
+          const audio = new Audio(`/sounds/${notificationSound}.mp3`);
+          audio.play().catch((e) => console.log("Audio play blocked", e));
+        }
+      };
 
-    const messageHandler = (newMessage) => {
-      if (newMessage.senderId !== selectedUser._id) return;
-      const currentUserEmail = useAuthStore.getState().authUser.email;
-      const mySecretKey = localStorage.getItem(
-        `${currentUserEmail}_secret_key`,
-      );
-      const otherPersonPublicKey = selectedUser.publicKey;
+      if (selectedUser && selectedUser._id === newMessage.senderId) {
+        // We are currently chatting with the sender
+        const currentUserEmail = useAuthStore.getState().authUser.email;
+        const mySecretKey = localStorage.getItem(`${currentUserEmail}_secret_key`);
+        const otherPersonPublicKey = selectedUser.publicKey;
+        
+        if (newMessage.text && newMessage.textNonce) {
+          newMessage.text = decryptText(
+            newMessage.text,
+            newMessage.textNonce,
+            otherPersonPublicKey,
+            mySecretKey,
+          );
+        }
+        if (newMessage.image && newMessage.imageNonce) {
+          newMessage.image = decryptText(
+            newMessage.image,
+            newMessage.imageNonce,
+            otherPersonPublicKey,
+            mySecretKey,
+          );
+        }
 
-      if (newMessage.text && newMessage.textNonce) {
-        newMessage.text = decryptText(
-          newMessage.text,
-          newMessage.textNonce,
-          otherPersonPublicKey,
-          mySecretKey,
-        );
+        set({ messages: [...messages, newMessage] });
+        playSound();
+
+        axiosInstance
+          .put(`/messages/mark-read/${newMessage.senderId}`)
+          .catch(console.error);
+      } else {
+        // Not chatting with the sender
+        set({
+          unreadCounts: {
+            ...unreadCounts,
+            [newMessage.senderId]: (unreadCounts[newMessage.senderId] || 0) + 1,
+          },
+        });
+        playSound();
       }
-      if (newMessage.image && newMessage.imageNonce) {
-        newMessage.image = decryptText(
-          newMessage.image,
-          newMessage.imageNonce,
-          otherPersonPublicKey,
-          mySecretKey,
-        );
+    });
+
+    socket.off("messagesRead");
+    socket.on("messagesRead", ({ receiverId }) => {
+      const { messages, selectedUser } = get();
+      if (selectedUser && selectedUser._id === receiverId) {
+        set({
+          messages: messages.map((msg) =>
+            msg.receiverId === receiverId ? { ...msg, isRead: true } : msg
+          ),
+        });
       }
-
-      set({ messages: [...get().messages, newMessage] });
-    };
-
-    socket.on("newMessage", messageHandler);
-    set({ messageHandler });
-  },
-
-  unsubscribeFromMessages: () => {
-    const socket = useAuthStore.getState().socket;
-    const { messageHandler } = get();
-    if (messageHandler) {
-      socket.off("newMessage", messageHandler);
-      set({ messageHandler: null });
-    }
+    });
   },
 
   getContacts: async () => {
