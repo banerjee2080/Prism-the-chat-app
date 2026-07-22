@@ -167,7 +167,7 @@ export const useChatStore = create((set, get) => ({
       set({ unreadCounts: { ...currentUnreadCount, [selectedUser._id]: 0 } });
 
       try {
-        await axiosInstance.put(`/messages/mark-read/${user._id}`);
+        await axiosInstance.put(`/messages/mark-read/${selectedUser._id}`);
       } catch (error) {
         toast.error(error.response?.data?.message || error.message);
       }
