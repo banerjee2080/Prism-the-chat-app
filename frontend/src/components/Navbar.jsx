@@ -5,7 +5,7 @@ import { Settings, User, LogOut, MessageSquare } from "lucide-react";
 const Navbar = () => {
   const { authUser, logout } = useAuthStore();
   return (
-    <nav className="glass-panel rounded-none border-t-0 border-x-0 sticky top-0 z-50">
+    <nav className="bg-base-100/80 backdrop-blur-lg border-b border-base-content/10 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           to="/"

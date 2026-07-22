@@ -30,9 +30,9 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pt-20 pb-10 flex items-center justify-center p-4 bg-base-200/50">
+    <div className="flex-1 overflow-y-auto pt-10 pb-10 flex justify-center p-4 bg-base-200/50">
       {/* Glassmorphic Container */}
-      <div className="w-full max-w-2xl bg-base-100/60 backdrop-blur-2xl p-8 sm:p-12 rounded-[2.5rem] relative overflow-hidden shadow-2xl shadow-base-content/5 border border-base-content/10">
+      <div className="w-full max-w-2xl bg-base-100/60 backdrop-blur-2xl p-8 sm:p-12 rounded-[2.5rem] relative overflow-hidden shadow-2xl shadow-base-content/5 border border-base-content/10 h-fit mt-4">
         {/* Subtle background glow effect */}
         <div className="absolute -top-10 -right-10 w-96 h-96 bg-primary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
         <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-secondary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
