@@ -1,15 +1,9 @@
 export const THEMES = [
+  "light",
   "dark",
   "synthwave",
-  "cyberpunk",
-  "forest",
-  "aqua",
-  "black",
-  "luxury",
   "dracula",
+  "luxury",
   "night",
-  "coffee",
-  "dim",
-  "nord",
   "sunset",
 ];

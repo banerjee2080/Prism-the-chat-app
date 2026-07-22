@@ -70,7 +70,7 @@ function App() {
     );
   }
   return (
-    <div className="h-screen bg-base-200 text-base-content overflow-hidden flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-300 text-base-content overflow-hidden flex flex-col">
       <Navbar />
       <Routes>
         <Route

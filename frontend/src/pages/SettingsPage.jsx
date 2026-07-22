@@ -17,110 +17,123 @@ const SettingsPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex-1 overflow-y-auto w-full pt-20 pb-10">
-      <div className="container mx-auto px-4 max-w-5xl space-y-6">
+    <div className="flex-1 overflow-y-auto w-full pt-20 pb-10 bg-base-200/50">
+      <div className="container mx-auto px-4 max-w-5xl space-y-8">
         <button 
           onClick={() => navigate("/")} 
-          className="btn btn-sm btn-ghost mb-2 flex items-center gap-2"
+          className="btn btn-sm btn-ghost mb-2 flex items-center gap-2 hover:bg-base-300 rounded-full px-4 transition-all"
         >
           <ArrowLeft className="size-4" />
           Back to Home
         </button>
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">Theme</h2>
-          <p className="text-sm text-base-content/70">
-            Choose a theme for your chat interface
-          </p>
-        </div>
 
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-          {THEMES.map((t) => (
-            <button
-              key={t}
-              className={`
-                group flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-colors
-                ${theme === t ? "bg-base-200" : "hover:bg-base-200/50"}
-              `}
-              onClick={() => setTheme(t)}
-            >
-              <div
-                className="relative h-8 w-full rounded-xl overflow-hidden"
-                data-theme={t}
+        <div className="bg-base-100/60 backdrop-blur-xl border border-base-content/10 p-8 rounded-[2rem] shadow-2xl shadow-base-content/5">
+          <div className="flex flex-col gap-2 mb-8">
+            <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+              Theme Customization
+            </h2>
+            <p className="text-sm text-base-content/70">
+              Personalize your chat experience with our curated premium themes.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            {THEMES.map((t) => (
+              <button
+                key={t}
+                className={`
+                  group flex flex-col items-center gap-3 p-4 rounded-3xl transition-all duration-300 border
+                  ${theme === t 
+                    ? "bg-base-200 border-primary shadow-lg shadow-primary/20 scale-105" 
+                    : "bg-base-100/50 border-base-content/10 hover:bg-base-200/80 hover:border-primary/50 hover:scale-105"}
+                `}
+                onClick={() => setTheme(t)}
               >
-                <div className="absolute inset-0 grid grid-cols-4 gap-px p-1">
-                  <div className="rounded bg-primary"></div>
-                  <div className="rounded bg-secondary"></div>
-                  <div className="rounded bg-accent"></div>
-                  <div className="rounded bg-neutral"></div>
+                <div
+                  className="relative h-12 w-full rounded-2xl overflow-hidden shadow-inner"
+                  data-theme={t}
+                >
+                  <div className="absolute inset-0 grid grid-cols-4 gap-px p-1">
+                    <div className="rounded-l-xl bg-primary"></div>
+                    <div className="bg-secondary"></div>
+                    <div className="bg-accent"></div>
+                    <div className="rounded-r-xl bg-neutral"></div>
+                  </div>
                 </div>
-              </div>
-              <span className="text-[11px] font-medium truncate w-full text-center">
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </span>
-            </button>
-          ))}
+                <span className={`text-sm font-semibold tracking-wide truncate w-full text-center transition-colors
+                  ${theme === t ? "text-primary" : "text-base-content/80 group-hover:text-base-content"}
+                `}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Preview Section */}
-        <h3 className="text-lg font-semibold mb-3">Preview</h3>
-        <div className="rounded-3xl border border-base-300 overflow-hidden bg-base-100 shadow-lg shadow-base-content/5">
-          <div className="p-4 bg-base-200">
-            <div className="max-w-lg mx-auto">
-              {/* Mock Chat UI */}
-              <div className="bg-base-100 rounded-3xl shadow-sm shadow-base-content/5 overflow-hidden">
-                {/* Chat Header */}
-                <div className="px-4 py-3 border-b border-base-300 bg-base-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-content font-medium">
-                      J
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm">John Doe</h3>
-                      <p className="text-xs text-base-content/70">Online</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Chat Messages */}
-                <div className="p-4 space-y-4 min-h-50 max-h-50 overflow-y-auto bg-base-100">
-                  {PREVIEW_MESSAGES.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.isSent ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`
-                          max-w-[80%] rounded-2xl p-3 shadow-sm shadow-base-content/5
-                          ${message.isSent ? "bg-primary text-primary-content" : "bg-base-200"}
-                        `}
-                      >
-                        <p className="text-sm">{message.content}</p>
-                        <p
-                          className={`
-                            text-[10px] mt-1.5
-                            ${message.isSent ? "text-primary-content/70" : "text-base-content/70"}
-                          `}
-                        >
-                          12:00 PM
-                        </p>
+        <div className="bg-base-100/60 backdrop-blur-xl border border-base-content/10 p-8 rounded-[2rem] shadow-2xl shadow-base-content/5 mt-8">
+          <h3 className="text-2xl font-bold mb-6 text-base-content">Live Preview</h3>
+          <div className="rounded-[2.5rem] p-1 bg-gradient-to-tr from-primary/30 via-secondary/20 to-accent/30 shadow-2xl shadow-primary/10">
+            <div className="rounded-[2.4rem] bg-base-200 overflow-hidden">
+              <div className="max-w-2xl mx-auto py-8 px-4">
+                {/* Mock Chat UI */}
+                <div className="bg-base-100 rounded-3xl shadow-xl border border-base-content/5 overflow-hidden flex flex-col transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5">
+                  {/* Chat Header */}
+                  <div className="px-6 py-4 border-b border-base-300 bg-base-100/80 backdrop-blur-md">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-primary-content font-bold shadow-md">
+                        JD
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-base">John Doe</h3>
+                        <p className="text-xs font-medium text-emerald-500">Online</p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                {/* Chat Input */}
-                <div className="p-4 border-t border-base-300 bg-base-100">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      className="input input-bordered flex-1 text-sm h-10 rounded-full"
-                      placeholder="Type a message..."
-                      value="This is a preview"
-                      readOnly
-                    />
-                    <button className="btn btn-primary btn-circle h-10 min-h-0">
-                      <Send size={18} />
-                    </button>
+                  {/* Chat Messages */}
+                  <div className="p-6 space-y-6 min-h-[320px] max-h-[320px] overflow-y-auto bg-base-100/50">
+                    {PREVIEW_MESSAGES.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${message.isSent ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-2 fade-in duration-300`}
+                      >
+                        <div
+                          className={`
+                            max-w-[75%] rounded-[1.5rem] p-4 shadow-sm relative group
+                            ${message.isSent 
+                              ? "bg-primary text-primary-content rounded-tr-sm" 
+                              : "bg-base-200 text-base-content rounded-tl-sm"}
+                          `}
+                        >
+                          <p className="text-[15px] leading-relaxed">{message.content}</p>
+                          <p
+                            className={`
+                              text-[10px] mt-2 font-medium opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-5
+                              ${message.isSent ? "right-2 text-base-content/60" : "left-2 text-base-content/60"}
+                            `}
+                          >
+                            12:00 PM
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chat Input */}
+                  <div className="p-4 border-t border-base-300 bg-base-100/80 backdrop-blur-md">
+                    <div className="flex gap-3 items-center bg-base-200/50 p-1.5 rounded-full border border-base-content/10 transition-colors focus-within:border-primary/50 focus-within:bg-base-100">
+                      <input
+                        type="text"
+                        className="bg-transparent border-none focus:outline-none focus:ring-0 flex-1 text-sm h-10 px-4 placeholder:text-base-content/40"
+                        placeholder="Type a message..."
+                        value="This is a preview"
+                        readOnly
+                      />
+                      <button className="btn btn-primary btn-circle h-10 w-10 min-h-0 shadow-md shadow-primary/20 hover:scale-105 transition-transform">
+                        <Send size={18} className="ml-1" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
