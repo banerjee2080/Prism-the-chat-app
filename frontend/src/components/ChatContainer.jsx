@@ -52,68 +52,80 @@ const ChatContainer = () => {
     <div className="flex-1 flex flex-col overflow-auto bg-base-100/20">
       <ChatHeader />
       {/*Showing messages*/}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            ref={messageEndRef}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-          >
-            <div className="chat-image avatar">
-              <div className="size-10 rounded-full border border-base-content/10 shadow-sm shadow-base-content/10">
-                <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
-                  }
-                />
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {messages.map((message) => {
+          const isSent = message.senderId === authUser._id;
+          return (
+            <div
+              key={message._id}
+              ref={messageEndRef}
+              className={`chat ${isSent ? "chat-end" : "chat-start"} animate-in slide-in-from-bottom-2 fade-in duration-300`}
+            >
+              <div className="chat-image avatar">
+                <div className="size-10 rounded-[1.2rem] shadow-sm shadow-base-content/10">
+                  <img
+                    src={
+                      isSent
+                        ? authUser.profilePic || "/avatar.png"
+                        : selectedUser.profilePic || "/avatar.png"
+                    }
+                  />
+                </div>
+              </div>
+              <div className="chat-header mb-1.5 opacity-0 transition-opacity duration-300">
+                <time className="text-[10px] font-semibold uppercase tracking-wider text-base-content/50 mx-1">
+                  {formatMessageTime(message.createdAt)}
+                </time>
+              </div>
+              <div
+                className={`chat-bubble flex flex-col relative group px-5 py-3.5 shadow-sm
+                  ${isSent 
+                    ? "bg-primary text-primary-content rounded-[1.5rem] rounded-tr-sm shadow-primary/20" 
+                    : "bg-base-100/80 backdrop-blur-md border border-base-content/5 text-base-content rounded-[1.5rem] rounded-tl-sm"}
+                `}
+              >
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="sm:max-w-[220px] rounded-[1rem] mb-2 cursor-pointer hover:scale-[1.02] transition-transform duration-300 shadow-sm shadow-black/20"
+                    onClick={() => setSelectedImage(message.image)}
+                  />
+                )}
+                {message.text && <p className="text-[15px] leading-relaxed">{message.text}</p>}
+                
+                <p className={`text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-5 ${isSent ? 'right-2 text-base-content/60' : 'left-2 text-base-content/60'}`}>
+                  {formatMessageTime(message.createdAt)}
+                </p>
               </div>
             </div>
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(message.createdAt)}
-              </time>
-            </div>
-            <div
-              className={`chat-bubble flex flex-col shadow-sm shadow-base-content/5 rounded-3xl ${message.senderId === authUser._id ? "bg-primary text-primary-content" : "glass-panel"}`}
-            >
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-2xl mb-2 cursor-pointer hover:opacity-90 transition-opacity shadow-sm shadow-base-content/10"
-                  onClick={() => setSelectedImage(message.image)}
-                />
-              )}
-              {message.text && <p>{message.text}</p>}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <MessageInput />
 
       {/* Image Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm cursor-zoom-out"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md cursor-zoom-out"
           onClick={() => setSelectedImage(null)}
         >
+          <button
+            className="fixed top-4 right-4 z-[110] btn btn-circle bg-base-300/50 hover:bg-base-300 border-none text-white hover:text-base-content shadow-2xl transition-all"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X className="size-6" />
+          </button>
+          
           <div
-            className="relative max-w-5xl max-h-[90vh] w-full flex items-center justify-center cursor-default"
+            className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={selectedImage}
               alt="Enlarged attachment"
-              className="max-w-full max-h-[90vh] object-contain rounded-3xl shadow-2xl shadow-base-content/5"
+              className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl shadow-black"
             />
-            <button
-              className="absolute top-4 right-4 md:-top-4 md:-right-4 btn btn-circle btn-sm btn-ghost bg-base-100/50 hover:bg-base-100/80 text-base-content shadow-sm shadow-base-content/10"
-              onClick={() => setSelectedImage(null)}
-            >
-              <X className="size-4" />
-            </button>
           </div>
         </div>
       )}

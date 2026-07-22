@@ -48,41 +48,41 @@ const Sidebar = () => {
   if (sidebarUsers.length === 0) return <NoContacts />;
   return (
     <aside
-      className={`h-full border-r border-base-content/10 flex flex-col transition-all duration-300 ${selectedUser ? "hidden lg:flex lg:w-72" : "w-full lg:w-72 flex"}`}
+      className={`h-full border-r border-base-content/5 flex flex-col transition-all duration-300 bg-base-100/30 ${selectedUser ? "hidden lg:flex lg:w-[22rem]" : "w-full lg:w-[22rem] flex"}`}
     >
-      <div className="border-b border-base-content/10 w-full p-5">
-        <label className="cursor-pointer flex items-center gap-2">
+      <div className="border-b border-base-content/5 w-full p-6">
+        <label className="cursor-pointer flex items-center justify-between gap-3 bg-base-200/40 p-3 px-4 rounded-[1.5rem] border border-base-content/5 transition-all hover:bg-base-200/60">
+          <span className="text-[13px] font-semibold text-base-content/80 tracking-wide uppercase">Show Online Only</span>
           <input
             type="checkbox"
             checked={showOnlineOnly}
             onChange={(e) => setShowOnlineOnly(e.target.checked)}
-            className="checkbox checkbox-sm rounded-full checkbox-primary"
+            className="toggle toggle-sm toggle-primary"
           />
-          <span className="text-sm font-medium block">Show Online Only</span>
         </label>
       </div>
 
-      <div className="w-full px-5 pb-2">
+      <div className="w-full px-6 pb-2 pt-5">
         <button
           onClick={() => navigate("/add-Contacts")}
-          className="btn btn-primary w-full shadow-md shadow-primary/20 rounded-2xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
+          className="btn btn-primary w-full shadow-lg shadow-primary/20 rounded-[1.5rem] transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 flex items-center justify-center gap-2 h-12 border-none"
         >
-          <UserPlus className="size-4" />
-          Add contact
+          <UserPlus className="size-5" />
+          <span className="font-bold tracking-wide">Add Contact</span>
         </button>
       </div>
 
-      <div className="overflow-y-auto w-full py-3 px-2 flex flex-col gap-2 flex-1">
+      <div className="overflow-y-auto w-full py-4 px-4 flex flex-col gap-2 flex-1">
         {filteredUsers.map((contacts) => (
           <button
             key={contacts._id}
             onClick={() => setSelectedUser(contacts)}
             className={`
-              w-full p-3 flex items-center gap-3 rounded-3xl transition-all duration-300 ease-out
+              w-full p-3.5 flex items-center gap-4 rounded-[1.5rem] transition-all duration-300 ease-out group border border-transparent
               ${
                 selectedUser?._id === contacts._id
-                  ? "glass-liquid text-primary-content"
-                  : "hover:bg-base-200/40 hover:backdrop-blur-md border border-transparent"
+                  ? "bg-primary text-primary-content shadow-lg shadow-primary/20 scale-[1.02]"
+                  : "hover:bg-base-200/50 hover:border-base-content/5 hover:scale-[1.01]"
               }
             `}
           >
@@ -90,12 +90,11 @@ const Sidebar = () => {
               <img
                 src={contacts.profilePic || "/avatar.png"}
                 alt={contacts.name}
-                className="size-12 object-cover rounded-full shadow-sm shadow-base-content/10"
+                className={`size-12 object-cover rounded-2xl shadow-sm transition-transform duration-300 group-hover:scale-105 ${selectedUser?._id === contacts._id ? "shadow-primary/30" : "shadow-base-content/10"}`}
               />
               {onlineUsers.includes(contacts._id) && (
                 <span
-                  className="absolute bottom-0 right-0 size-3 bg-green-500 
-                  rounded-full ring-2 ring-base-100"
+                  className="absolute -bottom-1 -right-1 size-3.5 bg-emerald-500 rounded-full border-[2.5px] border-base-100 shadow-sm"
                 />
               )}
             </div>
@@ -103,12 +102,12 @@ const Sidebar = () => {
             {/* User info */}
             <div className="text-left min-w-0 block">
               <div
-                className={`font-semibold truncate ${selectedUser?._id === contacts._id ? "text-base-content" : ""}`}
+                className={`font-bold truncate tracking-wide text-[15px] ${selectedUser?._id === contacts._id ? "text-primary-content" : "text-base-content/90"}`}
               >
                 {contacts.fullName}
               </div>
               <div
-                className={`text-xs ${selectedUser?._id === contacts._id ? "text-base-content/70" : "text-base-content/50"}`}
+                className={`text-[11px] font-semibold mt-1 tracking-wider uppercase ${selectedUser?._id === contacts._id ? "text-primary-content/80" : "text-base-content/40"}`}
               >
                 {onlineUsers.includes(contacts._id) ? "Online" : "Offline"}
               </div>
@@ -116,8 +115,8 @@ const Sidebar = () => {
           </button>
         ))}
         {filteredUsers.length === 0 && (
-          <div className="text-center text-base-content/50 py-4 text-sm font-medium">
-            No online users
+          <div className="text-center text-base-content/40 py-8 text-sm font-semibold tracking-wide">
+            No contacts found
           </div>
         )}
       </div>

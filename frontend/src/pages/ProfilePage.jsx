@@ -30,45 +30,45 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pt-20 pb-10 flex items-center justify-center p-4">
+    <div className="flex-1 overflow-y-auto pt-20 pb-10 flex items-center justify-center p-4 bg-base-200/50">
       {/* Glassmorphic Container */}
-      <div className="w-full max-w-2xl glass-panel p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl shadow-base-content/5">
+      <div className="w-full max-w-2xl bg-base-100/60 backdrop-blur-2xl p-8 sm:p-12 rounded-[2.5rem] relative overflow-hidden shadow-2xl shadow-base-content/5 border border-base-content/10">
         {/* Subtle background glow effect */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-secondary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div className="absolute -top-10 -right-10 w-96 h-96 bg-primary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
+        <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-secondary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
 
         <div className="relative z-10">
           <button
             onClick={() => navigate("/")}
-            className="btn btn-sm btn-ghost mb-4 flex items-center gap-2"
+            className="btn btn-sm btn-ghost mb-6 flex items-center gap-2 hover:bg-base-300/50 rounded-full px-4 transition-all"
           >
             <ArrowLeft className="size-4" />
             Back to Home
           </button>
 
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-semibold tracking-tight text-base-content mb-2">
+            <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-base-content to-base-content/60 mb-2">
               Profile
             </h1>
-            <p className="text-base-content/60 text-sm">
+            <p className="text-base-content/60 text-sm font-medium">
               Manage your personal information
             </p>
           </div>
 
           {/* Avatar Upload Section */}
-          <div className="flex flex-col items-center mb-10">
-            <div className="relative group">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-base-100 shadow-xl shadow-base-content/10 relative z-10 transition-transform duration-300 group-hover:scale-[1.02]">
+          <div className="flex flex-col items-center mb-12">
+            <div className="relative group cursor-pointer">
+              <div className="w-36 h-36 rounded-[2.5rem] overflow-hidden border border-base-content/10 shadow-xl shadow-base-content/10 relative z-10 transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-2 bg-base-200">
                 <img
                   src={authUser.profilePic || selectedImage || "/avatar.png"}
                   alt="Profile picture"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
                 />
 
                 {/* Upload Overlay */}
                 <label
                   htmlFor="avatar-upload"
-                  className={`absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer backdrop-blur-sm ${isUpdatingProfile ? "pointer-events-none" : ""}`}
+                  className={`absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer backdrop-blur-sm ${isUpdatingProfile ? "pointer-events-none opacity-100 bg-black/50" : ""}`}
                 >
                   {isUpdatingProfile ? (
                     <Loader2 className="size-8 text-white animate-spin" />
@@ -87,75 +87,73 @@ const ProfilePage = () => {
                 disabled={isUpdatingProfile}
               />
             </div>
-            <p className="mt-4 text-sm text-base-content/60 font-medium">
+            <p className="mt-4 text-sm text-base-content/60 font-medium tracking-wide">
               {isUpdatingProfile ? "Uploading..." : "Click image to update"}
             </p>
           </div>
 
           {/* Profile Details section */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold mb-4 text-base-content/80">
-              Account Details
-            </h2>
-
-            <div className="bg-base-100/50 backdrop-blur-md rounded-3xl p-4 border border-base-content/10 flex items-center gap-4 transition-all duration-300 hover:bg-base-100/70">
-              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <User className="size-5" />
+          <div className="space-y-4 max-w-md mx-auto">
+            <div className="bg-base-200/50 backdrop-blur-md rounded-[2rem] p-5 border border-base-content/5 flex items-center gap-5 transition-all duration-300 hover:bg-base-200/80 hover:shadow-md hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                <User className="size-6" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-base-content/50 uppercase font-semibold tracking-wider">
+                <p className="text-[11px] text-base-content/50 uppercase font-bold tracking-widest">
                   Full Name
                 </p>
-                <p className="text-sm font-medium mt-0.5">
+                <p className="text-base font-semibold mt-0.5 text-base-content/90">
                   {authUser.fullName}
                 </p>
               </div>
             </div>
 
-            <div className="bg-base-100/50 backdrop-blur-md rounded-3xl p-4 border border-base-content/10 flex items-center gap-4 transition-all duration-300 hover:bg-base-100/70">
-              <div className="w-10 h-10 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
-                <Mail className="size-5" />
+            <div className="bg-base-200/50 backdrop-blur-md rounded-[2rem] p-5 border border-base-content/5 flex items-center gap-5 transition-all duration-300 hover:bg-base-200/80 hover:shadow-md hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary shadow-inner">
+                <Mail className="size-6" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-base-content/50 uppercase font-semibold tracking-wider">
+                <p className="text-[11px] text-base-content/50 uppercase font-bold tracking-widest">
                   Email
                 </p>
-                <p className="text-sm font-medium mt-0.5">{authUser.email}</p>
+                <p className="text-base font-semibold mt-0.5 text-base-content/90">{authUser.email}</p>
               </div>
             </div>
 
-            <div className="bg-base-100/50 backdrop-blur-md rounded-3xl p-4 border border-base-content/10 flex items-center gap-4 transition-all duration-300 hover:bg-base-100/70">
-              <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
-                <Calendar className="size-5" />
+            <div className="bg-base-200/50 backdrop-blur-md rounded-[2rem] p-5 border border-base-content/5 flex items-center gap-5 transition-all duration-300 hover:bg-base-200/80 hover:shadow-md hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent shadow-inner">
+                <Calendar className="size-6" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-base-content/50 uppercase font-semibold tracking-wider">
+                <p className="text-[11px] text-base-content/50 uppercase font-bold tracking-widest">
                   Member Since
                 </p>
-                <p className="text-sm font-medium mt-0.5">
+                <p className="text-base font-semibold mt-0.5 text-base-content/90">
                   {authUser.createdAt?.split("T")[0] || "Unknown"}
                 </p>
               </div>
-              <div className="badge badge-success badge-sm shadow-sm shadow-base-content/10">
+              <div className="badge badge-success badge-sm shadow-sm font-semibold tracking-wide px-3 py-2.5">
                 Active
               </div>
             </div>
 
-            <button
-              onClick={() => navigate("/secretKey")}
-              className="w-full mt-6 bg-primary/10 hover:bg-primary/20 backdrop-blur-md rounded-3xl p-4 border border-primary/20 flex items-center justify-center gap-2 transition-all duration-300 text-primary font-semibold shadow-lg shadow-primary/5 group"
-            >
-              <span>View Secret Key</span>
-              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                <ArrowLeft className="size-3 rotate-180" />
-              </div>
-            </button>
-            <button
-              onClick={() => navigate("/devices")}
-              className="w-full mt-6 bg-primary/10 hover:bg-primary/20 backdrop-blur-md rounded-3xl p-4 border border-primary/20 flex items-center justify-center gap-2 transition-all duration-300 text-primary font-semibold shadow-lg shadow-primary/5 group"
-            >
-              <span>View Devices</span>
-            </button>
+            <div className="pt-6 space-y-3">
+              <button
+                onClick={() => navigate("/secretKey")}
+                className="w-full bg-primary text-primary-content hover:bg-primary/90 rounded-[2rem] p-4 flex items-center justify-center gap-2 transition-all duration-300 font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] group"
+              >
+                <span>View Secret Key</span>
+                <div className="w-6 h-6 rounded-full bg-primary-content/20 flex items-center justify-center group-hover:bg-primary-content/30 transition-colors">
+                  <ArrowLeft className="size-3 rotate-180" />
+                </div>
+              </button>
+              <button
+                onClick={() => navigate("/devices")}
+                className="w-full bg-base-200/50 hover:bg-base-200/80 text-base-content rounded-[2rem] p-4 border border-base-content/10 flex items-center justify-center gap-2 transition-all duration-300 font-semibold shadow-sm hover:shadow-md hover:scale-[1.02]"
+              >
+                <span>View Devices</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

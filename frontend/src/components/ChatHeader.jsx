@@ -28,24 +28,24 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className="p-4 border-b border-base-content/10 flex justify-between items-center backdrop-blur-md bg-base-100/40 sticky top-0 z-10 shadow-sm shadow-base-content/5">
-      <div className="flex items-center gap-3">
+    <div className="p-5 flex justify-between items-center backdrop-blur-xl bg-base-100/60 sticky top-0 z-10 border-b border-base-content/5 shadow-sm">
+      <div className="flex items-center gap-4">
         <div className="relative">
           <img
             src={selectedUser.profilePic || "/avatar.png"}
             alt={selectedUser.fullName}
-            className="size-10 object-cover rounded-full shadow-sm shadow-base-content/10"
+            className="size-11 object-cover rounded-[1.2rem] shadow-sm shadow-base-content/10"
           />
           {onlineUsers.includes(selectedUser._id) && (
             <span
-              className="absolute bottom-0 right-0 size-2.5 bg-green-500 
-                rounded-full ring-2 ring-base-100"
+              className="absolute -bottom-1 -right-1 size-3.5 bg-emerald-500 
+                rounded-full border-[2.5px] border-base-100 shadow-sm"
             />
           )}
         </div>
         <div>
-          <h1 className="font-semibold">{selectedUser.fullName}</h1>
-          <p className="text-xs text-base-content/60">
+          <h1 className="font-bold tracking-wide text-base-content/90">{selectedUser.fullName}</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-base-content/50 mt-0.5">
             {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
           </p>
         </div>
@@ -54,17 +54,17 @@ const ChatHeader = () => {
         {isContact ? (
           <button
             onClick={handleDelete}
-            className="btn btn-error btn-sm opacity-80 hover:opacity-100 text-white flex items-center gap-2"
+            className="btn btn-error btn-sm bg-error/10 hover:bg-error/20 text-error border-none rounded-xl flex items-center gap-2 transition-all"
             title="Delete Contact"
           >
             <Trash2 className="size-4" />
-            <span className="hidden sm:inline">Delete</span>
+            <span className="hidden sm:inline font-semibold tracking-wide">Delete</span>
           </button>
         ) : (
           <button
             onClick={handleAdd}
             disabled={isAdding}
-            className="btn btn-primary btn-sm opacity-80 hover:opacity-100 text-white flex items-center gap-2"
+            className="btn btn-primary btn-sm bg-primary/10 hover:bg-primary/20 text-primary border-none rounded-xl flex items-center gap-2 transition-all"
             title="Add Contact"
           >
             {isAdding ? (
@@ -72,12 +72,12 @@ const ChatHeader = () => {
             ) : (
               <UserPlus className="size-4" />
             )}
-            <span className="hidden sm:inline">Add</span>
+            <span className="hidden sm:inline font-semibold tracking-wide">Add</span>
           </button>
         )}
         <button
           onClick={() => setSelectedUser(null)}
-          className="btn btn-ghost btn-sm btn-circle opacity-70 hover:opacity-100"
+          className="btn btn-ghost btn-sm btn-circle hover:bg-base-200 text-base-content/60 hover:text-base-content ml-1 transition-colors"
         >
           <X className="size-5" />
         </button>
