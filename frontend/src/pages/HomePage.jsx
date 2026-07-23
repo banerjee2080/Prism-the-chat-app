@@ -45,8 +45,8 @@ const HomePage = () => {
   }, [authUser.email, navigate]);
 
   return (
-    <div className="flex-1 min-h-0 flex justify-center pt-8 pb-12 px-4 sm:px-6 lg:px-8 bg-base-200/30">
-      <div className="bg-base-100/60 backdrop-blur-2xl border border-base-content/10 shadow-2xl shadow-base-content/5 w-full max-w-7xl h-full flex overflow-hidden rounded-[2.5rem]">
+    <div className="flex-1 min-h-0 flex justify-center sm:pt-8 sm:pb-12 sm:px-4 md:px-6 lg:px-8 bg-base-200/30">
+      <div className="bg-base-100/60 backdrop-blur-2xl sm:border border-base-content/10 sm:shadow-2xl sm:shadow-base-content/5 w-full max-w-7xl h-full flex overflow-hidden sm:rounded-[2.5rem]">
         <Sidebar />
         {selectedUser ? <ChatContainer /> : <NoChatSelected />}
       </div>

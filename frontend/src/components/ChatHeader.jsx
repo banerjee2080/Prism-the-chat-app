@@ -29,8 +29,8 @@ const ChatHeader = () => {
 
   return (
     <div className="p-5 flex justify-between items-center backdrop-blur-xl bg-base-100/60 sticky top-0 z-10 border-b border-base-content/5 shadow-sm">
-      <div className="flex items-center gap-4">
-        <div className="relative">
+      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+        <div className="relative shrink-0">
           <img
             src={selectedUser.profilePic || "/avatar.png"}
             alt={selectedUser.fullName}
@@ -43,9 +43,9 @@ const ChatHeader = () => {
             />
           )}
         </div>
-        <div>
-          <h1 className="font-bold tracking-wide text-base-content/90">{selectedUser.fullName}</h1>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-base-content/50 mt-0.5">
+        <div className="min-w-0">
+          <h1 className="font-bold tracking-wide text-base-content/90 truncate">{selectedUser.fullName}</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-base-content/50 mt-0.5 truncate">
             {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
           </p>
         </div>

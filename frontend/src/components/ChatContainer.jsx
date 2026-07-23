@@ -42,10 +42,10 @@ const ChatContainer = () => {
     );
   }
   return (
-    <div className="flex-1 flex flex-col overflow-auto bg-base-100/20">
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden bg-base-100/20">
       <ChatHeader />
       {/*Showing messages*/}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
         {messages.map((message) => {
           const isSent = message.senderId === authUser._id;
           return (

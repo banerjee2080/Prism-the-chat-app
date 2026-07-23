@@ -98,15 +98,15 @@ const MessageInput = () => {
       )}
       <form
         onSubmit={handleSendMessage}
-        className="flex items-center gap-3 max-w-4xl mx-auto"
+        className="flex items-center gap-2 sm:gap-3 w-full max-w-4xl mx-auto"
       >
-        <div className="flex-1 flex items-center bg-base-200/60 backdrop-blur-xl rounded-full border border-base-content/10 shadow-lg shadow-base-content/5 p-1.5 transition-all focus-within:bg-base-100/80 focus-within:border-primary/30 focus-within:shadow-xl focus-within:shadow-primary/5">
+        <div className="flex-1 min-w-0 flex items-center bg-base-200/60 backdrop-blur-xl rounded-full border border-base-content/10 shadow-lg shadow-base-content/5 p-1.5 transition-all focus-within:bg-base-100/80 focus-within:border-primary/30 focus-within:shadow-xl focus-within:shadow-primary/5">
           <input
             type="text"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none focus:ring-0 text-[15px] px-5 placeholder:text-base-content/40 h-10"
+            className="flex-1 min-w-0 w-full bg-transparent border-none outline-none focus:ring-0 text-[15px] px-3 sm:px-5 placeholder:text-base-content/40 h-10"
           />
           <input
             type="file"
@@ -126,7 +126,7 @@ const MessageInput = () => {
         <button
           type="submit"
           disabled={(!text.trim() && !imagePreview) || isMessageSending}
-          className="btn btn-circle btn-primary size-12 min-h-0 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
+          className="btn btn-circle btn-primary size-12 min-h-0 shrink-0 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
         >
           <Send className="size-5 ml-1" />
         </button>
