@@ -6,6 +6,32 @@ export function formatMessageTime(date) {
   });
 }
 
+export function isSameDay(a, b) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+/** "Today" / "Yesterday" / "Mon, 4 Aug" — the label on a chat day divider. */
+export function formatDayLabel(date) {
+  const day = new Date(date);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  if (isSameDay(day, today)) return "Today";
+  if (isSameDay(day, yesterday)) return "Yesterday";
+
+  return day.toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: day.getFullYear() === today.getFullYear() ? undefined : "numeric",
+  });
+}
+
 export function getDeviceInfo() {
   const ua = navigator.userAgent;
   

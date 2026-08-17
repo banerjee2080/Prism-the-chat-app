@@ -1,31 +1,30 @@
-const MessageSkeleton = () => {
-  // Create an array of 6 items for skeleton messages
-  const skeletonMessages = Array(6).fill(null);
+const SKELETON_ROWS = [
+  { sent: false, w: "12rem" },
+  { sent: false, w: "8rem" },
+  { sent: true, w: "14rem" },
+  { sent: false, w: "16rem" },
+  { sent: true, w: "9rem" },
+  { sent: true, w: "12rem" },
+];
 
-  return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {skeletonMessages.map((_, idx) => (
+const MessageSkeleton = () => (
+  <div className="flex-1 min-h-0 overflow-hidden px-4 sm:px-6 py-5 flex flex-col gap-3">
+    {SKELETON_ROWS.map((row, idx) => (
+      <div
+        key={idx}
+        style={{ "--i": idx }}
+        className={`stagger animate-fade-in flex items-end gap-2 ${
+          row.sent ? "justify-end" : "justify-start"
+        }`}
+      >
+        {!row.sent && <div className="shimmer size-8 rounded-full shrink-0" />}
         <div
-          key={idx}
-          className={`chat ${idx % 2 === 0 ? "chat-start" : "chat-end"}`}
-        >
-          <div className="chat-image avatar">
-            <div className="size-10 rounded-full">
-              <div className="skeleton w-full h-full rounded-full" />
-            </div>
-          </div>
-
-          <div className="chat-header mb-1">
-            <div className="skeleton h-4 w-16" />
-          </div>
-
-          <div className="chat-bubble bg-transparent p-0">
-            <div className="skeleton h-16 w-50" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+          className="shimmer h-11 rounded-[1.35rem]"
+          style={{ width: row.w, maxWidth: "70%" }}
+        />
+      </div>
+    ))}
+  </div>
+);
 
 export default MessageSkeleton;

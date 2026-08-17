@@ -1,10 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="obsidian">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" id="dynamic-favicon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171a24" />
     <title>Prism</title>
+    <script>
+      // Apply the saved theme before first paint so the app never flashes.
+      (function () {
+        try {
+          var legacy = {
+            dark: "obsidian",
+            light: "daylight",
+            night: "midnight",
+            synthwave: "neon",
+            dracula: "vampire",
+            luxury: "gilded",
+            sunset: "dusk",
+            coffee: "obsidian",
+          };
+          var saved = localStorage.getItem("chat-theme");
+          if (saved) {
+            document.documentElement.setAttribute(
+              "data-theme",
+              legacy[saved] || saved,
+            );
+          }
+        } catch (e) {
+          /* localStorage unavailable — keep the default theme */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

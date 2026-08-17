@@ -5,10 +5,12 @@ import { axiosInstance } from "../lib/axios.js";
 import { getDeviceInfo } from "../lib/utils.js";
 import { verifySecretKey } from "../lib/crypto.js";
 import toast from "react-hot-toast";
-import { KeyRound, ArrowRight, X } from "lucide-react";
+import { KeyRound, ArrowRight, Loader2 } from "lucide-react";
+import GlassModal from "../components/GlassModal.jsx";
 
 const SetSecretKeyPage = () => {
   const [secretKey, setSecretKey] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
   const { authUser, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -24,6 +26,7 @@ const SetSecretKeyPage = () => {
       return;
     }
 
+    setIsVerifying(true);
     localStorage.setItem(`${authUser.email}_secret_key`, secretKey);
     const deviceInfo = getDeviceInfo();
 
@@ -35,62 +38,63 @@ const SetSecretKeyPage = () => {
       console.log("Error adding device:", error);
       toast.error(error.response?.data?.message || error.message);
       navigate("/");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-base-300/60 backdrop-blur-sm">
-      <div className="glass w-full max-w-md bg-base-100/50 backdrop-blur-xl border border-white/10 p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl">
-        <button
-          onClick={() => logout()}
-          className="absolute top-4 right-4 p-2 bg-base-200/50 hover:bg-base-300/50 rounded-full transition-colors z-20"
-        >
-          <X className="size-5" />
-        </button>
-        {/* Subtle background glow effect */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-secondary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-
-        <div className="relative z-10 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-6 shadow-inner">
-            <KeyRound className="size-8" />
+    <GlassModal
+      onClose={logout}
+      dismissible={false}
+      icon={KeyRound}
+      title="Unlock this device"
+      subtitle="Your secret key decrypts your messages and registers this device."
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <label className="block">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-base-content/50 mb-2 ml-1">
+            Secret key
+          </span>
+          <div className="glass-field flex items-center h-12 px-5">
+            <input
+              type="text"
+              autoFocus
+              placeholder="Paste your key"
+              className="flex-1 min-w-0 bg-transparent border-none outline-none text-base-content caret-primary font-mono text-sm placeholder:text-base-content/35 placeholder:font-sans"
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+            />
           </div>
+        </label>
 
-          <h1 className="text-3xl font-semibold tracking-tight text-base-content mb-2">
-            Set Secret Key
-          </h1>
-          <p className="text-base-content/60 text-sm mb-8">
-            This key is required to encrypt your messages and identify this
-            device.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-6 text-left">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-base-content/80 ml-1">
-                Your Secret Key
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Enter a secure key..."
-                  className="w-full bg-base-100/50 border border-base-content/10 text-base-content rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all backdrop-blur-md"
-                  value={secretKey}
-                  onChange={(e) => setSecretKey(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full btn btn-primary rounded-2xl py-3 h-auto text-base font-semibold shadow-lg shadow-primary/30 group border-none"
-            >
+        <button
+          type="submit"
+          disabled={isVerifying}
+          className="sheen press group w-full h-12 rounded-2xl bg-primary text-primary-content font-bold tracking-wide glow-primary flex items-center justify-center gap-2 transition-transform duration-400 hover:-translate-y-0.5 disabled:opacity-60"
+        >
+          {isVerifying ? (
+            <>
+              <Loader2 className="size-5 animate-spin" />
+              Verifying...
+            </>
+          ) : (
+            <>
               Continue
-              <ArrowRight className="size-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+              <ArrowRight className="size-5 transition-transform duration-400 group-hover:translate-x-1" />
+            </>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={logout}
+          className="w-full text-xs font-semibold uppercase tracking-[0.12em] text-base-content/40 hover:text-base-content/70 transition-colors"
+        >
+          Sign out instead
+        </button>
+      </form>
+    </GlassModal>
   );
 };
 

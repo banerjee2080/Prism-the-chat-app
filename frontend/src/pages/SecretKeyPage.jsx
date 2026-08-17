@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
 import { useNavigate } from "react-router-dom";
-import { KeyRound, Copy, Check, X } from "lucide-react";
+import { KeyRound, Copy, Check, Eye, EyeOff, ShieldAlert } from "lucide-react";
+import GlassModal from "../components/GlassModal.jsx";
 
 const SecretKeyPage = () => {
   const { authUser } = useAuthStore();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+
   const secretKey =
     localStorage.getItem(`${authUser.email}_secret_key`) || "No key found.";
 
@@ -17,59 +20,62 @@ const SecretKeyPage = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-base-300/60 backdrop-blur-sm">
-      <div className="glass w-full max-w-md bg-base-100/50 backdrop-blur-xl border border-white/10 p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl">
-        <button
-          onClick={() => navigate("/profile")}
-          className="absolute top-4 right-4 p-2 bg-base-200/50 hover:bg-base-300/50 rounded-full transition-colors z-20"
-        >
-          <X className="size-5" />
-        </button>
-        {/* Subtle background glow effect */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-secondary/20 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+    <GlassModal
+      onClose={() => navigate("/profile")}
+      icon={KeyRound}
+      title="Your secret key"
+      subtitle="This key decrypts your messages. Never share it."
+    >
+      <div className="glass-card p-5 rounded-[1.4rem]">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-base-content/40">
+            Current key
+          </p>
+          <button
+            onClick={() => setRevealed((v) => !v)}
+            className="press flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-base-content/50 hover:text-base-content transition-colors"
+          >
+            {revealed ? (
+              <EyeOff className="size-3.5" />
+            ) : (
+              <Eye className="size-3.5" />
+            )}
+            {revealed ? "Hide" : "Reveal"}
+          </button>
+        </div>
 
-        <div className="relative z-10">
-
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-6 shadow-inner">
-              <KeyRound className="size-8" />
-            </div>
-            <h1 className="text-3xl font-semibold tracking-tight text-base-content mb-2">
-              Your Secret Key
-            </h1>
-            <p className="text-base-content/60 text-sm">
-              Keep this safe. Do not share it with anyone.
-            </p>
-          </div>
-
-          <div className="bg-base-100/50 backdrop-blur-md rounded-2xl p-6 border border-base-content/10 transition-all duration-300">
-            <p className="text-xs text-base-content/50 uppercase font-semibold tracking-wider mb-3">
-              Current Key
-            </p>
-            <div className="flex items-center gap-3">
-              <input
-                type="text"
-                readOnly
-                value={secretKey}
-                className="w-full bg-transparent border-none text-base-content font-mono text-sm focus:outline-none"
-              />
-              <button
-                onClick={handleCopy}
-                className="btn btn-circle btn-sm bg-primary/10 hover:bg-primary/20 border-none text-primary transition-all duration-300"
-                title="Copy to clipboard"
-              >
-                {copied ? (
-                  <Check className="size-4 text-success" />
-                ) : (
-                  <Copy className="size-4" />
-                )}
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center gap-3">
+          <p
+            className={`flex-1 min-w-0 font-mono text-sm break-all transition-all duration-300 ${
+              revealed
+                ? "text-base-content/90"
+                : "text-base-content/40 blur-[6px] select-none"
+            }`}
+          >
+            {secretKey}
+          </p>
+          <button
+            onClick={handleCopy}
+            className="glass-tile glass-hover press size-10 rounded-xl grid place-items-center text-primary shrink-0"
+            title="Copy to clipboard"
+          >
+            {copied ? (
+              <Check className="size-4 text-success animate-pop" />
+            ) : (
+              <Copy className="size-4" />
+            )}
+          </button>
         </div>
       </div>
-    </div>
+
+      <div className="flex items-start gap-3 mt-4 px-1">
+        <ShieldAlert className="size-4 text-warning shrink-0 mt-0.5" />
+        <p className="text-xs text-base-content/50 leading-relaxed">
+          Anyone with this key can read your conversations. Store it in a
+          password manager — you'll need it to sign in on a new device.
+        </p>
+      </div>
+    </GlassModal>
   );
 };
 

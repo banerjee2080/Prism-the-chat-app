@@ -7,8 +7,33 @@ import {
   Loader2,
   Calendar,
   ArrowLeft,
+  ArrowRight,
+  KeyRound,
+  MonitorSmartphone,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+const InfoRow = ({ icon: Icon, tint, label, value, badge, index }) => (
+  <div
+    style={{ "--i": index }}
+    className="stagger animate-glass-rise glass-card glass-hover flex items-center gap-4 p-4 rounded-[1.4rem]"
+  >
+    <div
+      className={`size-11 rounded-[1.1rem] grid place-items-center shrink-0 ${tint}`}
+    >
+      <Icon className="size-5" />
+    </div>
+    <div className="min-w-0 flex-1">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-base-content/40">
+        {label}
+      </p>
+      <p className="text-[15px] font-semibold text-base-content/90 truncate mt-0.5">
+        {value}
+      </p>
+    </div>
+    {badge}
+  </div>
+);
 
 const ProfilePage = () => {
   const { authUser, updateProfile, isUpdatingProfile } = useAuthStore();
@@ -30,130 +55,116 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto pt-10 pb-10 flex justify-center p-4 bg-base-200/50">
-      {/* Glassmorphic Container */}
-      <div className="w-full max-w-2xl bg-base-100/60 backdrop-blur-2xl p-8 sm:p-12 rounded-[2.5rem] relative overflow-hidden shadow-2xl shadow-base-content/5 border border-base-content/10 h-fit mt-4">
-        {/* Subtle background glow effect */}
-        <div className="absolute -top-10 -right-10 w-96 h-96 bg-primary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
-        <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-secondary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
-
+    <div className="flex-1 overflow-y-auto scroll-area flex justify-center py-6 px-4">
+      <div className="glass-panel animate-glass-rise w-full max-w-2xl h-fit p-6 sm:p-10 rounded-[2rem]">
         <div className="relative z-10">
           <button
             onClick={() => navigate("/")}
-            className="btn btn-sm btn-ghost mb-6 flex items-center gap-2 hover:bg-base-300/50 rounded-full px-4 transition-all"
+            className="glass-tile glass-hover press inline-flex items-center gap-2 h-10 px-4 rounded-2xl text-sm font-semibold text-base-content/70 mb-8"
           >
             <ArrowLeft className="size-4" />
-            Back to Home
+            Back to chats
           </button>
 
-          <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-base-content to-base-content/60 mb-2">
-              Profile
-            </h1>
-            <p className="text-base-content/60 text-sm font-medium">
-              Manage your personal information
-            </p>
-          </div>
-
-          {/* Avatar Upload Section */}
-          <div className="flex flex-col items-center mb-12">
-            <div className="relative group cursor-pointer">
-              <div className="w-36 h-36 rounded-[2.5rem] overflow-hidden border border-base-content/10 shadow-xl shadow-base-content/10 relative z-10 transition-transform duration-500 group-hover:scale-[1.05] group-hover:rotate-2 bg-base-200">
+          {/* Avatar */}
+          <div className="flex flex-col items-center mb-10">
+            <label
+              htmlFor="avatar-upload"
+              className="relative group cursor-pointer"
+            >
+              <div className="absolute inset-0 rounded-[2rem] bg-primary/30 blur-2xl scale-105 opacity-70" />
+              <div className="relative size-32 rounded-[2rem] overflow-hidden border border-base-content/10 shadow-[0_24px_50px_-24px_var(--glass-shadow)] transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-2">
                 <img
-                  src={authUser.profilePic || selectedImage || "/avatar.png"}
-                  alt="Profile picture"
-                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
+                  src={selectedImage || authUser.profilePic || "/avatar.png"}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
                 />
-
-                {/* Upload Overlay */}
-                <label
-                  htmlFor="avatar-upload"
-                  className={`absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer backdrop-blur-sm ${isUpdatingProfile ? "pointer-events-none opacity-100 bg-black/50" : ""}`}
+                <div
+                  className={`absolute inset-0 grid place-items-center bg-black/45 backdrop-blur-sm transition-opacity duration-300 ${
+                    isUpdatingProfile
+                      ? "opacity-100"
+                      : "opacity-0 group-hover:opacity-100"
+                  }`}
                 >
                   {isUpdatingProfile ? (
-                    <Loader2 className="size-8 text-white animate-spin" />
+                    <Loader2 className="size-7 text-white animate-spin" />
                   ) : (
-                    <Camera className="size-8 text-white" />
+                    <Camera className="size-7 text-white" />
                   )}
-                </label>
+                </div>
               </div>
+            </label>
 
-              <input
-                type="file"
-                id="avatar-upload"
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={isUpdatingProfile}
-              />
-            </div>
-            <p className="mt-4 text-sm text-base-content/60 font-medium tracking-wide">
-              {isUpdatingProfile ? "Uploading..." : "Click image to update"}
+            <input
+              type="file"
+              id="avatar-upload"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={isUpdatingProfile}
+            />
+
+            <h1 className="text-2xl font-bold tracking-tight text-gradient mt-5">
+              {authUser.fullName}
+            </h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-base-content/40 mt-1.5">
+              {isUpdatingProfile ? "Uploading..." : "Tap photo to change"}
             </p>
           </div>
 
-          {/* Profile Details section */}
-          <div className="space-y-4 max-w-md mx-auto">
-            <div className="bg-base-200/50 backdrop-blur-md rounded-[2rem] p-5 border border-base-content/5 flex items-center gap-5 transition-all duration-300 hover:bg-base-200/80 hover:shadow-md hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
-                <User className="size-6" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] text-base-content/50 uppercase font-bold tracking-widest">
-                  Full Name
-                </p>
-                <p className="text-base font-semibold mt-0.5 text-base-content/90">
-                  {authUser.fullName}
-                </p>
-              </div>
-            </div>
+          {/* Details */}
+          <div className="space-y-3">
+            <InfoRow
+              index={0}
+              icon={User}
+              tint="bg-primary/15 text-primary"
+              label="Full name"
+              value={authUser.fullName}
+            />
+            <InfoRow
+              index={1}
+              icon={Mail}
+              tint="bg-secondary/15 text-secondary"
+              label="Email"
+              value={authUser.email}
+            />
+            <InfoRow
+              index={2}
+              icon={Calendar}
+              tint="bg-accent/15 text-accent"
+              label="Member since"
+              value={authUser.createdAt?.split("T")[0] || "Unknown"}
+              badge={
+                <span className="shrink-0 px-3 py-1 rounded-full bg-success/15 text-success text-[10px] font-bold uppercase tracking-[0.12em]">
+                  Active
+                </span>
+              }
+            />
+          </div>
 
-            <div className="bg-base-200/50 backdrop-blur-md rounded-[2rem] p-5 border border-base-content/5 flex items-center gap-5 transition-all duration-300 hover:bg-base-200/80 hover:shadow-md hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary shadow-inner">
-                <Mail className="size-6" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] text-base-content/50 uppercase font-bold tracking-widest">
-                  Email
-                </p>
-                <p className="text-base font-semibold mt-0.5 text-base-content/90">{authUser.email}</p>
-              </div>
-            </div>
+          {/* Actions */}
+          <div className="grid sm:grid-cols-2 gap-3 mt-8">
+            <button
+              onClick={() => navigate("/secretKey")}
+              className="sheen press group h-14 px-5 rounded-2xl bg-primary text-primary-content font-bold glow-primary flex items-center justify-between gap-3 transition-transform duration-400 hover:-translate-y-0.5"
+            >
+              <span className="flex items-center gap-2.5">
+                <KeyRound className="size-5" />
+                Secret key
+              </span>
+              <ArrowRight className="size-4 transition-transform duration-400 group-hover:translate-x-1" />
+            </button>
 
-            <div className="bg-base-200/50 backdrop-blur-md rounded-[2rem] p-5 border border-base-content/5 flex items-center gap-5 transition-all duration-300 hover:bg-base-200/80 hover:shadow-md hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent shadow-inner">
-                <Calendar className="size-6" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] text-base-content/50 uppercase font-bold tracking-widest">
-                  Member Since
-                </p>
-                <p className="text-base font-semibold mt-0.5 text-base-content/90">
-                  {authUser.createdAt?.split("T")[0] || "Unknown"}
-                </p>
-              </div>
-              <div className="badge badge-success badge-sm shadow-sm font-semibold tracking-wide px-3 py-2.5">
-                Active
-              </div>
-            </div>
-
-            <div className="pt-6 space-y-3">
-              <button
-                onClick={() => navigate("/secretKey")}
-                className="w-full bg-primary text-primary-content hover:bg-primary/90 rounded-[2rem] p-4 flex items-center justify-center gap-2 transition-all duration-300 font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] group"
-              >
-                <span>View Secret Key</span>
-                <div className="w-6 h-6 rounded-full bg-primary-content/20 flex items-center justify-center group-hover:bg-primary-content/30 transition-colors">
-                  <ArrowLeft className="size-3 rotate-180" />
-                </div>
-              </button>
-              <button
-                onClick={() => navigate("/devices")}
-                className="w-full bg-base-200/50 hover:bg-base-200/80 text-base-content rounded-[2rem] p-4 border border-base-content/10 flex items-center justify-center gap-2 transition-all duration-300 font-semibold shadow-sm hover:shadow-md hover:scale-[1.02]"
-              >
-                <span>View Devices</span>
-              </button>
-            </div>
+            <button
+              onClick={() => navigate("/devices")}
+              className="glass-tile glass-hover press sheen group h-14 px-5 rounded-2xl font-bold text-base-content/85 flex items-center justify-between gap-3"
+            >
+              <span className="flex items-center gap-2.5">
+                <MonitorSmartphone className="size-5 text-base-content/60" />
+                Devices
+              </span>
+              <ArrowRight className="size-4 transition-transform duration-400 group-hover:translate-x-1" />
+            </button>
           </div>
         </div>
       </div>

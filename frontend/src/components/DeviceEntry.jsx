@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Laptop,
   Smartphone,
@@ -7,7 +7,6 @@ import {
   HardDrive,
   MapPin,
   Monitor,
-  LogOut,
   LogOutIcon,
   Loader2,
 } from "lucide-react";
@@ -23,25 +22,32 @@ const getDeviceIcon = (deviceType, os) => {
     osName.includes("android") ||
     osName.includes("ios")
   )
-    return <Smartphone className="size-6 text-primary" />;
+    return <Smartphone className="size-5" />;
   if (type.includes("tablet") || osName.includes("ipad"))
-    return <Tablet className="size-6 text-secondary" />;
+    return <Tablet className="size-5" />;
   if (
     type.includes("desktop") ||
     type.includes("mac") ||
     type.includes("windows") ||
     type.includes("pc")
   )
-    return <Monitor className="size-6 text-accent" />;
+    return <Monitor className="size-5" />;
 
-  // Default fallback
-  return <Laptop className="size-6 text-primary" />;
+  return <Laptop className="size-5" />;
 };
 
-const DeviceEntry = ({ device }) => {
+const Meta = ({ icon: Icon, value }) =>
+  value ? (
+    <span className="flex items-center gap-1.5 text-[11px] text-base-content/50 min-w-0">
+      <Icon className="size-3.5 shrink-0" />
+      <span className="truncate">{value}</span>
+    </span>
+  ) : null;
+
+const DeviceEntry = ({ device, index = 0 }) => {
   const { removeDevice, devices } = useAuthStore();
   const [isRemoving, setIsRemoving] = useState(false);
-  
+
   const currentDeviceId = localStorage.getItem("deviceId");
   const isCurrentDevice = currentDeviceId === device.deviceId;
   const isOnlyDevice = devices.length <= 1;
@@ -58,58 +64,54 @@ const DeviceEntry = ({ device }) => {
   };
 
   return (
-    <div className={`bg-base-100/50 backdrop-blur-md rounded-2xl p-4 border ${isCurrentDevice ? "border-primary/30" : "border-base-content/10"} hover:bg-base-100/70 transition-all duration-300 mb-3`}>
-      <div className="flex items-start gap-4">
-        <div className="w-12 h-12 rounded-xl bg-base-200/50 flex items-center justify-center shadow-inner shrink-0">
+    <div
+      style={{ "--i": index }}
+      className={`stagger animate-glass-rise glass-card glass-hover p-4 rounded-[1.4rem] ${
+        isCurrentDevice ? "!border-primary/35" : ""
+      }`}
+    >
+      <div className="flex items-start gap-3.5">
+        <div
+          className={`size-11 rounded-[1.1rem] grid place-items-center shrink-0 ${
+            isCurrentDevice
+              ? "bg-primary/15 text-primary"
+              : "bg-base-content/8 text-base-content/60"
+          }`}
+        >
           {getDeviceIcon(device.deviceType, device.os)}
         </div>
 
-        <div className="flex-1 space-y-1 min-w-0">
-          <h3 className="font-semibold text-base-content flex items-center gap-2 truncate">
-            {device.deviceName || "Unknown Device"}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-bold text-sm text-base-content/90 truncate">
+              {device.deviceName || "Unknown Device"}
+            </h3>
             {isCurrentDevice && (
-              <span className="badge badge-sm badge-primary badge-outline text-[10px]">
-                This Device
+              <span className="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[9px] font-bold uppercase tracking-[0.12em]">
+                This device
               </span>
-            )}
-          </h3>
-
-          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-base-content/60 mt-2">
-            {device.os && (
-              <div className="flex items-center gap-1.5">
-                <HardDrive className="size-3.5" />
-                <span className="truncate">{device.os}</span>
-              </div>
-            )}
-
-            {device.browser && (
-              <div className="flex items-center gap-1.5">
-                <Globe className="size-3.5" />
-                <span className="truncate">{device.browser}</span>
-              </div>
-            )}
-
-            {device.ipAddress && (
-              <div className="flex items-center gap-1.5">
-                <MapPin className="size-3.5" />
-                <span className="truncate">{device.ipAddress}</span>
-              </div>
             )}
           </div>
 
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2">
+            <Meta icon={HardDrive} value={device.os} />
+            <Meta icon={Globe} value={device.browser} />
+            <Meta icon={MapPin} value={device.ipAddress} />
+          </div>
+
           {!isOnlyDevice && (
-            <div className="mt-4 flex justify-end">
+            <div className="flex justify-end mt-3">
               <button
                 onClick={() => handleLogout(device.deviceId)}
                 disabled={isRemoving}
-                className="btn btn-sm btn-error btn-outline rounded-xl flex items-center gap-2"
+                className="press h-8 px-3 rounded-xl border border-error/30 text-error text-[11px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5 hover:bg-error/12 transition-colors disabled:opacity-60"
               >
                 {isRemoving ? (
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-3.5 animate-spin" />
                 ) : (
-                  <LogOutIcon className="size-4" />
+                  <LogOutIcon className="size-3.5" />
                 )}
-                {isCurrentDevice ? "Log Out" : "Remove Device"}
+                {isCurrentDevice ? "Log out" : "Remove"}
               </button>
             </div>
           )}

@@ -1,4 +1,4 @@
-import { Image as ImageIcon, Send, X } from "lucide-react";
+import { Image as ImageIcon, Send, X, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../stores/useChatStore.js";
@@ -8,6 +8,8 @@ const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef();
+
+  const canSend = (text.trim() || imagePreview) && !isMessageSending;
 
   const removeImage = () => {
     setImagePreview(null);
@@ -77,36 +79,47 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 w-full sticky bottom-0 z-10 bg-gradient-to-t from-base-100/80 to-transparent pt-10">
+    <div className="relative px-3 sm:px-6 pb-4 pt-2 shrink-0">
+      {/* Fade so messages dissolve into the composer instead of hitting an edge */}
+      <div className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-gradient-to-t from-base-100/40 to-transparent" />
+
       {imagePreview && (
-        <div className="mb-4 flex items-center gap-2 max-w-4xl mx-auto animate-in slide-in-from-bottom-2 fade-in">
-          <div className="relative group">
-            <img
-              src={imagePreview}
-              alt="preview"
-              className="h-24 w-24 object-cover rounded-[1.5rem] border border-base-content/10 shadow-lg shadow-black/10 transition-transform group-hover:scale-[1.02]"
-            />
-            <button
-              type="button"
-              onClick={removeImage}
-              className="absolute -top-2 -right-2 size-7 rounded-full bg-base-300 flex items-center justify-center border border-base-content/10 shadow-md hover:bg-base-200 transition-colors z-20"
-            >
-              <X className="size-4" />
-            </button>
+        <div className="max-w-4xl mx-auto mb-3 animate-pop">
+          <div className="glass-card inline-flex items-center gap-3 p-2 pr-4 rounded-2xl">
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="Attachment preview"
+                className="size-16 object-cover rounded-xl"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute -top-2 -right-2 size-6 rounded-full grid place-items-center bg-base-300 border border-base-content/10 text-base-content shadow-lg press hover:bg-error hover:text-error-content transition-colors"
+                aria-label="Remove attachment"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+            <div className="text-xs">
+              <p className="font-semibold text-base-content/80">Image ready</p>
+              <p className="text-base-content/50">Send to share it</p>
+            </div>
           </div>
         </div>
       )}
+
       <form
         onSubmit={handleSendMessage}
         className="flex items-center gap-2 sm:gap-3 w-full max-w-4xl mx-auto"
       >
-        <div className="flex-1 min-w-0 flex items-center bg-base-200/60 backdrop-blur-xl rounded-full border border-base-content/10 shadow-lg shadow-base-content/5 p-1.5 transition-all focus-within:bg-base-100/80 focus-within:border-primary/30 focus-within:shadow-xl focus-within:shadow-primary/5">
+        <div className="glass-field flex-1 min-w-0 flex items-center h-12 pl-5 pr-1.5">
           <input
             type="text"
-            placeholder="Type a message..."
+            placeholder="Message"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="flex-1 min-w-0 w-full bg-transparent border-none outline-none focus:ring-0 text-[15px] px-3 sm:px-5 placeholder:text-base-content/40 h-10"
+            className="flex-1 min-w-0 bg-transparent border-none outline-none text-base-content caret-primary text-[15px] placeholder:text-base-content/40"
           />
           <input
             type="file"
@@ -118,17 +131,28 @@ const MessageInput = () => {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="btn btn-ghost btn-circle size-10 min-h-0 text-base-content/50 hover:text-primary hover:bg-primary/10 transition-colors mr-1"
+            className="size-9 rounded-full grid place-items-center text-base-content/45 hover:text-primary hover:bg-primary/10 press transition-colors"
+            aria-label="Attach image"
           >
             <ImageIcon className="size-5" />
           </button>
         </div>
+
         <button
           type="submit"
-          disabled={(!text.trim() && !imagePreview) || isMessageSending}
-          className="btn btn-circle btn-primary size-12 min-h-0 shrink-0 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
+          disabled={!canSend}
+          className={`relative size-12 shrink-0 rounded-full grid place-items-center press transition-all duration-400 ${
+            canSend
+              ? "bg-primary text-primary-content glow-primary scale-100 hover:scale-105"
+              : "glass-tile text-base-content/30 scale-95"
+          }`}
+          aria-label="Send message"
         >
-          <Send className="size-5 ml-1" />
+          {isMessageSending ? (
+            <Loader2 className="size-5 animate-spin" />
+          ) : (
+            <Send className={`size-5 transition-transform duration-400 ${canSend ? "translate-x-px" : ""}`} />
+          )}
         </button>
       </form>
     </div>

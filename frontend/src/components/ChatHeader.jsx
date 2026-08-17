@@ -1,17 +1,25 @@
 import { useChatStore } from "../stores/useChatStore.js";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { X, Trash2, UserPlus, Loader2 } from "lucide-react";
+import { X, Trash2, UserPlus, Loader2, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser, deleteContact, contacts, getContacts, getSidebarUsers } = useChatStore();
+  const {
+    selectedUser,
+    setSelectedUser,
+    deleteContact,
+    contacts,
+    getContacts,
+    getSidebarUsers,
+  } = useChatStore();
   const { onlineUsers, addContact } = useAuthStore();
   const [isAdding, setIsAdding] = useState(false);
 
   const navigate = useNavigate();
-  
+
   const isContact = contacts.some((c) => c._id === selectedUser._id);
+  const isOnline = onlineUsers.includes(selectedUser._id);
 
   const handleDelete = () => {
     setSelectedUser(null);
@@ -28,58 +36,83 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className="p-5 flex justify-between items-center backdrop-blur-xl bg-base-100/60 sticky top-0 z-10 border-b border-base-content/5 shadow-sm">
-      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+    <div className="glass-bar sticky top-0 z-20 px-3 sm:px-5 py-3 flex items-center justify-between gap-3 border-x-0 border-t-0 rounded-none">
+      <div className="flex items-center gap-3 min-w-0">
+        {/* Back to list on mobile */}
+        <button
+          onClick={() => setSelectedUser(null)}
+          className="lg:hidden glass-tile press size-9 rounded-xl grid place-items-center text-base-content/70 shrink-0"
+          aria-label="Back to conversations"
+        >
+          <ArrowLeft className="size-4.5" />
+        </button>
+
         <div className="relative shrink-0">
           <img
             src={selectedUser.profilePic || "/avatar.png"}
             alt={selectedUser.fullName}
-            className="size-11 object-cover rounded-[1.2rem] shadow-sm shadow-base-content/10"
+            className="size-11 object-cover rounded-[1.1rem]"
           />
-          {onlineUsers.includes(selectedUser._id) && (
-            <span
-              className="absolute -bottom-1 -right-1 size-3.5 bg-emerald-500 
-                rounded-full border-[2.5px] border-base-100 shadow-sm"
-            />
+          {isOnline && (
+            <span className="online-dot absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full" />
           )}
         </div>
+
         <div className="min-w-0">
-          <h1 className="font-bold tracking-wide text-base-content/90 truncate">{selectedUser.fullName}</h1>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-base-content/50 mt-0.5 truncate">
-            {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
+          <h1 className="font-bold tracking-tight text-base-content/90 truncate">
+            {selectedUser.fullName}
+          </h1>
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] mt-0.5 truncate">
+            <span
+              className={isOnline ? "text-success" : "text-base-content/40"}
+            >
+              {isOnline ? "Online" : "Offline"}
+            </span>
+            <span className="text-base-content/20">•</span>
+            <span className="hidden sm:flex items-center gap-1 text-base-content/40">
+              <ShieldCheck className="size-3" />
+              Encrypted
+            </span>
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+
+      <div className="flex items-center gap-2 shrink-0">
         {isContact ? (
           <button
             onClick={handleDelete}
-            className="btn btn-error btn-sm bg-error/10 hover:bg-error/20 text-error border-none rounded-xl flex items-center gap-2 transition-all"
-            title="Delete Contact"
+            className="glass-tile glass-hover press sheen h-9 px-3 rounded-xl flex items-center gap-2 text-error"
+            title="Delete contact"
           >
             <Trash2 className="size-4" />
-            <span className="hidden sm:inline font-semibold tracking-wide">Delete</span>
+            <span className="hidden sm:inline text-xs font-bold uppercase tracking-[0.1em]">
+              Delete
+            </span>
           </button>
         ) : (
           <button
             onClick={handleAdd}
             disabled={isAdding}
-            className="btn btn-primary btn-sm bg-primary/10 hover:bg-primary/20 text-primary border-none rounded-xl flex items-center gap-2 transition-all"
-            title="Add Contact"
+            className="glass-tile glass-hover press sheen h-9 px-3 rounded-xl flex items-center gap-2 text-primary disabled:opacity-60"
+            title="Add contact"
           >
             {isAdding ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
               <UserPlus className="size-4" />
             )}
-            <span className="hidden sm:inline font-semibold tracking-wide">Add</span>
+            <span className="hidden sm:inline text-xs font-bold uppercase tracking-[0.1em]">
+              Add
+            </span>
           </button>
         )}
+
         <button
           onClick={() => setSelectedUser(null)}
-          className="btn btn-ghost btn-sm btn-circle hover:bg-base-200 text-base-content/60 hover:text-base-content ml-1 transition-colors"
+          className="hidden lg:grid glass-tile glass-hover press size-9 rounded-xl place-items-center text-base-content/60 hover:text-base-content"
+          aria-label="Close conversation"
         >
-          <X className="size-5" />
+          <X className="size-4.5" />
         </button>
       </div>
     </div>

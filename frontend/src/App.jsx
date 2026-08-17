@@ -14,6 +14,7 @@ import AddContacts from "./pages/AddContacts.jsx";
 import SetSecretKeyPage from "./pages/setSecretKeyPage.jsx";
 import SecretKeyPage from "./pages/SecretKeyPage.jsx";
 import Devices from "./pages/Devices.jsx";
+import AmbientBackground from "./components/AmbientBackground.jsx";
 
 function App() {
   const { isCheckingAuth, authUser, checkAuth } = useAuthStore();
@@ -64,49 +65,60 @@ function App() {
   }, [theme]);
   if (isCheckingAuth && !authUser) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
+      <div className="app-shell h-screen flex items-center justify-center text-base-content">
+        <AmbientBackground />
+        <div className="relative z-10 flex flex-col items-center gap-5 animate-glass-rise">
+          <div className="brand-mark size-16 rounded-[1.4rem] flex items-center justify-center animate-float">
+            <Loader className="size-8 text-primary-content animate-spin" />
+          </div>
+          <p className="text-sm font-medium tracking-[0.2em] uppercase text-base-content/50">
+            Prism
+          </p>
+        </div>
       </div>
     );
   }
   return (
-    <div className="h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-300 text-base-content overflow-hidden flex flex-col">
+    <div className="app-shell h-screen text-base-content overflow-hidden flex flex-col">
+      <AmbientBackground />
       <Navbar />
-      <Routes>
-        <Route
-          path="/"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/signup"
-          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
-        />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route
-          path="/profile"
-          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/add-Contacts"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/setSecretKey"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/secretKey"
-          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/devices"
-          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
-        />
-      </Routes>
+      <main className="relative z-10 flex-1 min-h-0 flex flex-col">
+        <Routes>
+          <Route
+            path="/"
+            element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/login"
+            element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/signup"
+            element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
+          />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route
+            path="/profile"
+            element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/add-Contacts"
+            element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/setSecretKey"
+            element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/secretKey"
+            element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/devices"
+            element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+          />
+        </Routes>
+      </main>
 
       {authUser && location.pathname === "/add-Contacts" && <AddContacts />}
       {authUser && location.pathname === "/setSecretKey" && (
@@ -115,7 +127,20 @@ function App() {
       {authUser && location.pathname === "/secretKey" && <SecretKeyPage />}
       {authUser && location.pathname === "/devices" && <Devices />}
 
-      <Toaster />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          className: "glass-card !text-base-content !rounded-2xl !px-4 !py-3",
+          style: {
+            background: "var(--glass-bg-strong)",
+            boxShadow: "0 20px 45px -25px var(--glass-shadow)",
+            fontSize: "0.875rem",
+            fontWeight: 500,
+          },
+          success: { iconTheme: { primary: "var(--color-success)", secondary: "var(--color-base-100)" } },
+          error: { iconTheme: { primary: "var(--color-error)", secondary: "var(--color-base-100)" } },
+        }}
+      />
     </div>
   );
 }

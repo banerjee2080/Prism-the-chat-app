@@ -2,135 +2,213 @@ import ChatHeader from "./ChatHeader.jsx";
 import { useChatStore } from "../stores/useChatStore.js";
 import MessageSkeleton from "./skeletons/MessageSkeleton.jsx";
 import MessageInput from "./MessageInput.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { formatMessageTime } from "../lib/utils.js";
-import { X, Check, CheckCheck } from "lucide-react";
+import { formatMessageTime, formatDayLabel, isSameDay } from "../lib/utils.js";
+import { X } from "lucide-react";
+
+/** Messages from the same sender within this window render as one visual run. */
+const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
 const ChatContainer = () => {
-  const {
-    messages,
-    getMessages,
-    isMessagesLoading,
-    selectedUser,
-  } = useChatStore();
+  const { messages, getMessages, isMessagesLoading, selectedUser } =
+    useChatStore();
   const { authUser } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
+  const messageEndRef = useRef(null);
 
   useEffect(() => {
     getMessages(selectedUser._id);
-  }, [
-    selectedUser._id,
-    getMessages,
-  ]);
+  }, [selectedUser._id, getMessages]);
 
   useEffect(() => {
-    if (messageEndRef.current && messages) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const messageEndRef = useRef();
+  // Close the lightbox with Escape.
+  useEffect(() => {
+    if (!selectedImage) return;
+    const onKey = (e) => e.key === "Escape" && setSelectedImage(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedImage]);
+
+  /** Pre-compute grouping so the render stays declarative. */
+  const rows = useMemo(() => {
+    return messages.map((message, index) => {
+      const prev = messages[index - 1];
+      const next = messages[index + 1];
+      const at = new Date(message.createdAt);
+
+      const startsNewDay = !prev || !isSameDay(at, new Date(prev.createdAt));
+      const groupedWithPrev =
+        !!prev &&
+        !startsNewDay &&
+        prev.senderId === message.senderId &&
+        at - new Date(prev.createdAt) < GROUP_WINDOW_MS;
+      const groupedWithNext =
+        !!next &&
+        isSameDay(at, new Date(next.createdAt)) &&
+        next.senderId === message.senderId &&
+        new Date(next.createdAt) - at < GROUP_WINDOW_MS;
+
+      return { message, startsNewDay, groupedWithPrev, groupedWithNext };
+    });
+  }, [messages]);
+
+  const lastSentMessage = [...messages]
+    .reverse()
+    .find((m) => m.senderId === authUser._id);
 
   if (isMessagesLoading) {
     return (
-      <div>
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
         <ChatHeader />
         <MessageSkeleton />
         <MessageInput />
       </div>
     );
   }
+
   return (
-    <div className="flex-1 min-w-0 flex flex-col overflow-hidden bg-base-100/20">
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
       <ChatHeader />
-      {/*Showing messages*/}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-        {messages.map((message) => {
-          const isSent = message.senderId === authUser._id;
-          return (
-            <div
-              key={message._id}
-              ref={messageEndRef}
-              className={`chat ${isSent ? "chat-end" : "chat-start"} animate-in slide-in-from-bottom-2 fade-in duration-300`}
-            >
-              <div className="chat-image avatar">
-                <div className="size-10 rounded-[1.2rem] shadow-sm shadow-base-content/10">
-                  <img
-                    src={
-                      isSent
-                        ? authUser.profilePic || "/avatar.png"
-                        : selectedUser.profilePic || "/avatar.png"
-                    }
-                  />
-                </div>
-              </div>
-              <div className="chat-header mb-1.5 opacity-0 transition-opacity duration-300">
-                <time className="text-[10px] font-semibold uppercase tracking-wider text-base-content/50 mx-1">
-                  {formatMessageTime(message.createdAt)}
-                </time>
-              </div>
-              <div
-                className={`chat-bubble flex flex-col relative group px-5 py-3.5 shadow-sm
-                  ${isSent 
-                    ? "bg-primary text-primary-content rounded-[1.5rem] rounded-tr-sm shadow-primary/20" 
-                    : "bg-base-100/80 backdrop-blur-md border border-base-content/5 text-base-content rounded-[1.5rem] rounded-tl-sm"}
-                `}
-              >
-                {message.image && (
-                  <img
-                    src={message.image}
-                    alt="Attachment"
-                    className="sm:max-w-[220px] rounded-[1rem] mb-2 cursor-pointer hover:scale-[1.02] transition-transform duration-300 shadow-sm shadow-black/20"
-                    onClick={() => setSelectedImage(message.image)}
-                  />
-                )}
-                {message.text && <p className="text-[15px] leading-relaxed">{message.text}</p>}
-                
-                <div className={`flex items-center gap-1 absolute -bottom-5 ${isSent ? 'right-2' : 'left-2'}`}>
-                  <p className="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity text-base-content/60">
-                    {formatMessageTime(message.createdAt)}
-                  </p>
-                  {isSent && (
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      {message.isRead ? (
-                        <CheckCheck className="size-4 text-info" />
-                      ) : (
-                        <Check className="size-4 text-base-content/40" />
+
+      {messages.length === 0 ? (
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center text-center px-6 animate-glass-rise">
+          <img
+            src={selectedUser.profilePic || "/avatar.png"}
+            alt={selectedUser.fullName}
+            className="size-20 rounded-[1.6rem] object-cover mb-4 animate-float"
+          />
+          <h3 className="text-lg font-bold text-base-content/90">
+            {selectedUser.fullName}
+          </h3>
+          <p className="text-sm text-base-content/50 mt-1 max-w-xs">
+            This is the beginning of your encrypted conversation. Say hello.
+          </p>
+        </div>
+      ) : (
+        <div className="scroll-area flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-5">
+          <div className="flex flex-col">
+            {rows.map(
+              (
+                { message, startsNewDay, groupedWithPrev, groupedWithNext },
+                index,
+              ) => {
+                const isSent = message.senderId === authUser._id;
+                const showAvatar = !groupedWithNext;
+                const isLastSent = lastSentMessage?._id === message._id;
+
+                return (
+                  <div key={message._id}>
+                    {startsNewDay && (
+                      <div className="day-divider px-2 my-4">
+                        <span className="glass-tile px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] text-base-content/50">
+                          {formatDayLabel(message.createdAt)}
+                        </span>
+                      </div>
+                    )}
+
+                    <div
+                      className={`group flex items-end gap-2 ${
+                        isSent ? "justify-end" : "justify-start"
+                      } ${groupedWithPrev ? "mt-0.5" : "mt-3"}`}
+                      style={{ "--i": Math.min(index, 12) }}
+                    >
+                      {/* Avatar rail (incoming only) */}
+                      {!isSent && (
+                        <div className="w-8 shrink-0 self-end">
+                          {showAvatar && (
+                            <img
+                              src={selectedUser.profilePic || "/avatar.png"}
+                              alt={selectedUser.fullName}
+                              className="size-8 rounded-full object-cover mb-0.5"
+                            />
+                          )}
+                        </div>
                       )}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+
+                      {/* Hover timestamp, outgoing side */}
+                      {isSent && (
+                        <time className="shrink-0 text-[10px] font-medium tabular-nums text-base-content/40 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                          {formatMessageTime(message.createdAt)}
+                        </time>
+                      )}
+
+                      <div
+                        className={`animate-bubble-pop bubble ${
+                          isSent ? "bubble-out" : "bubble-in"
+                        } ${groupedWithPrev ? "is-mid-top" : ""} ${
+                          groupedWithNext ? "is-mid-bottom" : ""
+                        } ${message.image && !message.text ? "!p-1.5" : ""}`}
+                      >
+                        {message.image && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedImage(message.image)}
+                            className={`block overflow-hidden rounded-[1rem] press ${
+                              message.text ? "mb-2" : ""
+                            }`}
+                          >
+                            <img
+                              src={message.image}
+                              alt="Attachment"
+                              className="max-w-[220px] w-full object-cover transition-transform duration-500 hover:scale-[1.04]"
+                            />
+                          </button>
+                        )}
+                        {message.text && <p>{message.text}</p>}
+                      </div>
+
+                      {/* Hover timestamp, incoming side */}
+                      {!isSent && (
+                        <time className="shrink-0 text-[10px] font-medium tabular-nums text-base-content/40 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                          {formatMessageTime(message.createdAt)}
+                        </time>
+                      )}
+                    </div>
+
+                    {/* iMessage-style receipt under the newest outgoing message */}
+                    {isSent && isLastSent && (
+                      <div className="flex justify-end pr-1 mt-1 animate-fade-in">
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-base-content/40">
+                          {message.isRead ? "Read" : "Delivered"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              },
+            )}
+          </div>
+
+          <div ref={messageEndRef} className="h-2" />
+        </div>
+      )}
+
       <MessageInput />
 
-      {/* Image Modal */}
+      {/* Image lightbox */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md cursor-zoom-out"
+          className="glass-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 cursor-zoom-out"
           onClick={() => setSelectedImage(null)}
         >
           <button
-            className="fixed top-4 right-4 z-[110] btn btn-circle bg-base-300/50 hover:bg-base-300 border-none text-white hover:text-base-content shadow-2xl transition-all"
+            className="glass-tile glass-hover press fixed top-5 right-5 z-[110] size-11 rounded-2xl grid place-items-center text-base-content"
             onClick={() => setSelectedImage(null)}
+            aria-label="Close image"
           >
-            <X className="size-6" />
+            <X className="size-5" />
           </button>
-          
-          <div
-            className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center cursor-default"
+
+          <img
+            src={selectedImage}
+            alt="Enlarged attachment"
             onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={selectedImage}
-              alt="Enlarged attachment"
-              className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl shadow-black"
-            />
-          </div>
+            className="animate-modal-in max-w-full max-h-[88vh] object-contain rounded-[1.5rem] cursor-default shadow-[0_40px_90px_-30px_rgb(0_0_0/0.7)]"
+          />
         </div>
       )}
     </div>

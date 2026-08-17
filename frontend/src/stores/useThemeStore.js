@@ -1,7 +1,20 @@
 import { create } from "zustand";
+import {
+  DEFAULT_THEME,
+  LEGACY_THEME_MAP,
+  THEME_IDS,
+} from "../constants/index.js";
+
+const resolveTheme = (stored) => {
+  if (THEME_IDS.includes(stored)) return stored;
+  return LEGACY_THEME_MAP[stored] || DEFAULT_THEME;
+};
+
+const initialTheme = resolveTheme(localStorage.getItem("chat-theme"));
+localStorage.setItem("chat-theme", initialTheme);
 
 export const useThemeStore = create((set) => ({
-  theme: localStorage.getItem("chat-theme") || "coffee",
+  theme: initialTheme,
   setTheme: (theme) => {
     localStorage.setItem("chat-theme", theme);
     set({ theme });

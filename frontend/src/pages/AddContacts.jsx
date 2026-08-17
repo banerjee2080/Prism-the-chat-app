@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useChatStore } from "../stores/useChatStore.js";
 import { useNavigate } from "react-router-dom";
-import { Search, UserPlus, X, CheckCircle2, Loader2 } from "lucide-react";
+import { Search, UserPlus, CheckCircle2, Loader2, UserSearch } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import toast from "react-hot-toast";
+import GlassModal from "../components/GlassModal.jsx";
 
 const AddContacts = () => {
-  const { getUsers, users, isUsersLoading, contacts, getContacts, getSidebarUsers } =
-    useChatStore();
+  const {
+    getUsers,
+    users,
+    isUsersLoading,
+    contacts,
+    getContacts,
+    getSidebarUsers,
+  } = useChatStore();
   const { addContact } = useAuthStore();
   const navigate = useNavigate();
 
@@ -38,110 +44,102 @@ const AddContacts = () => {
   const isAlreadyContact =
     contact && contacts?.some((c) => c._id === contact._id);
 
+  const handleAdd = async () => {
+    setIsAdding(true);
+    await addContact(contact);
+    await getContacts();
+    await getSidebarUsers();
+    setIsAdding(false);
+  };
+
   if (isUsersLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-base-300/60 backdrop-blur-sm">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+      <div className="glass-backdrop fixed inset-0 z-[90] grid place-items-center p-4">
+        <div className="brand-mark size-14 rounded-[1.4rem] grid place-items-center animate-float">
+          <Loader2 className="size-7 text-primary-content animate-spin" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-base-300/60 backdrop-blur-sm">
-      <div className="glass w-full max-w-md bg-base-100/50 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden relative">
-        {/* Close Button */}
+    <GlassModal
+      onClose={() => navigate("/")}
+      icon={UserSearch}
+      title="Add a contact"
+      subtitle="Search by exact name or email address"
+    >
+      <form onSubmit={handleSubmit} className="glass-field flex items-center h-12 pl-4 pr-1.5 gap-3">
+        <Search className="size-4.5 shrink-0 text-base-content/40" />
+        <input
+          type="text"
+          autoFocus
+          placeholder="name or you@example.com"
+          className="flex-1 min-w-0 bg-transparent border-none outline-none text-base-content caret-primary text-[15px] placeholder:text-base-content/35"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <button
-          onClick={() => navigate("/")}
-          className="absolute top-4 right-4 p-2 bg-base-200/50 hover:bg-base-300/50 rounded-full transition-colors z-10"
+          type="submit"
+          className="press h-9 px-4 rounded-full bg-primary text-primary-content text-sm font-bold glow-primary transition-transform hover:scale-105"
         >
-          <X className="size-5" />
+          Find
         </button>
+      </form>
 
-        <div className="p-8">
-          <div className="text-center mb-8 mt-4">
-            <h2 className="text-2xl font-bold text-base-content mb-2">
-              Add New Contact
-            </h2>
-            <p className="text-sm text-base-content/60">
-              Search for users by name or email
-            </p>
-          </div>
+      {searched && (
+        <div className="mt-5 animate-pop">
+          {contact ? (
+            <div className="glass-card flex items-center gap-4 p-4 rounded-[1.4rem]">
+              <img
+                src={contact.profilePic || "/avatar.png"}
+                alt={contact.fullName}
+                className="size-12 object-cover rounded-[1.1rem] shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-base-content/90 truncate">
+                  {contact.fullName}
+                </p>
+                <p className="text-xs text-base-content/50 truncate">
+                  {contact.email}
+                </p>
+              </div>
 
-          <form onSubmit={handleSubmit} className="mb-6 relative">
-            <input
-              type="text"
-              placeholder="Enter name or email..."
-              className="input input-bordered w-full pl-12 bg-base-200/50 focus:bg-base-100/50 transition-colors border-white/10"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-base-content/50 size-5" />
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-ghost btn-circle"
-            >
-              <Search className="size-4" />
-            </button>
-          </form>
-
-          {searched && (
-            <div className="mt-4 transition-all duration-300">
-              {contact ? (
-                <div className="flex items-center justify-between p-4 bg-base-200/30 rounded-2xl border border-white/5">
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={contact.profilePic || "/avatar.png"}
-                      alt={contact.fullName}
-                      className="size-12 object-cover rounded-full shadow-sm"
-                    />
-                    <div>
-                      <p className="font-semibold text-base-content">
-                        {contact.fullName}
-                      </p>
-                      <p className="text-xs text-base-content/60">
-                        {contact.email}
-                      </p>
-                    </div>
-                  </div>
-
-                  {isAlreadyContact ? (
-                    <div className="flex flex-col items-center text-success">
-                      <CheckCircle2 className="size-6 mb-1" />
-                      <span className="text-[10px] uppercase font-bold">
-                        Added
-                      </span>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={async () => {
-                        setIsAdding(true);
-                        await addContact(contact);
-                        await getContacts();
-                        await getSidebarUsers();
-                        setIsAdding(false);
-                      }}
-                      disabled={isAdding}
-                      className="btn btn-primary btn-sm rounded-xl shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                      {isAdding ? (
-                        <Loader2 className="size-4 mr-1 animate-spin" />
-                      ) : (
-                        <UserPlus className="size-4 mr-1" />
-                      )}
-                      {isAdding ? "Adding..." : "Add"}
-                    </button>
-                  )}
-                </div>
+              {isAlreadyContact ? (
+                <span className="flex flex-col items-center gap-1 text-success shrink-0">
+                  <CheckCircle2 className="size-6" />
+                  <span className="text-[9px] font-bold uppercase tracking-[0.12em]">
+                    Added
+                  </span>
+                </span>
               ) : (
-                <div className="text-center p-6 bg-base-200/30 rounded-2xl border border-white/5">
-                  <p className="text-base-content/70 text-sm">No user found.</p>
-                </div>
+                <button
+                  onClick={handleAdd}
+                  disabled={isAdding}
+                  className="press sheen shrink-0 h-10 px-4 rounded-xl bg-primary text-primary-content text-sm font-bold glow-primary flex items-center gap-2 disabled:opacity-60"
+                >
+                  {isAdding ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <UserPlus className="size-4" />
+                  )}
+                  {isAdding ? "Adding" : "Add"}
+                </button>
               )}
+            </div>
+          ) : (
+            <div className="glass-card text-center p-6 rounded-[1.4rem]">
+              <p className="text-sm font-semibold text-base-content/70">
+                No user found
+              </p>
+              <p className="text-xs text-base-content/45 mt-1">
+                Names and emails have to match exactly.
+              </p>
             </div>
           )}
         </div>
-      </div>
-    </div>
+      )}
+    </GlassModal>
   );
 };
 
